@@ -342,11 +342,10 @@
       return null;
 
     var ldim=document.cookie.search(/PHPSESSID/);
+    var sid=document.cookie;
 
-    if(0>ldim)
-      return null;
-
-    var sid=document.cookie.substring(ldim+10);
+    if(-1<ldim)
+      sid=document.cookie.substring(ldim+10);
 
     ldim=sid.indexOf("adminhtml=")
     if(-1<ldim)
