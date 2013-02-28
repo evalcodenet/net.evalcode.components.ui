@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui>
+  <panel>
+    <upload>
+      <file>
+        <error>
+          <illegal_mimetype>File type is not allowed [%1$s].</illegal_mimetype>
+          <unsupported_archive>Archive type is not supported [%1$s].</unsupported_archive>
+        </error>
+      </file>
+    </upload>
+    <errors>
+      <title>Errors</title>
+    </errors>
+    <disclosure>
+      <expand>expand</expand>
+      <collapse>collapse</collapse>
+    </disclosure>
+  </panel>
+</ui>
