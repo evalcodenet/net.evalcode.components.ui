@@ -9,7 +9,7 @@
    *
    * @author evalcode.net
    */
-  class Ui_Panel_Exception extends Runtime_Http_Exception
+  class Ui_Panel_Exception extends Http_Exception
   {
 
   }

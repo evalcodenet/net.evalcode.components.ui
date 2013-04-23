@@ -399,7 +399,7 @@
 
 
     // STATIC ACCESSORS
-    // TODO Super-type 'Scriptlet'
+    // TODO Super-type 'Http_Scriptlet'
     public static function getSubmittedPanelId()
     {
       return self::$m_submittedPanelId;
@@ -408,19 +408,6 @@
     public static function setSubmittedPanelId($panelId_)
     {
       self::$m_submittedPanelId=$panelId_;
-    }
-
-    public static function getJavaScript()
-    {
-      if(0<count(self::$m_js))
-        return implode("\n", self::$m_js);
-
-      return null;
-    }
-
-    public static function appendJavaScript($js_)
-    {
-      self::$m_js[md5($js_)]=$js_;
     }
     //--------------------------------------------------------------------------
 
@@ -483,7 +470,6 @@
 
 
     // IMPLEMENTATION
-    private static $m_js=array();
     private static $m_submittedPanelId;
 
     private $m_path=array();

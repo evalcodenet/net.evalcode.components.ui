@@ -9,7 +9,7 @@
    *
    * @author evalcode.net
    *
-   * TODO Replace with 'Scriptlet'
+   * TODO Replace with 'Http_Scriptlet'
    */
   class Ui_Panel_Root extends Ui_Panel
   {

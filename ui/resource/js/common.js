@@ -31,7 +31,7 @@
     if("string"==typeof(exception_))
       exception_=eval("["+exception_+"]")[0];
 
-    error(exception_.type, exception_.message, exception_);
+    error(exception_.type, exception_.message, exception_.trace);
   }
 
   function ui_panel_submit(panelIdSubmitted_, callback_, params_, trigger_, panelUploadedId_)
@@ -138,44 +138,22 @@
 
         ui_panel_dump_debug(response);
 
-        var responseObject=null;
         var responseText=response.responseText;
+        var responseObject=eval(responseText);
+        
+        if(responseObject && responseObject[0])
+          responseObject=responseObject[0];
 
-        var start=responseText.indexOf("{");
-        var end=responseText.lastIndexOf("}")+1;
-
-        var responseJson="";
-        if(-1<start && -1<end)
-          responseJson=responseText.substring(start, end);
-
-        try
+        if(null==responseObject)
         {
-          var responseArray=eval("["+responseJson+"]");
-          if(responseArray && 0<responseArray.length)
-            responseObject=responseArray[0];
-        }
-        catch(e)
-        {
-          error("ui/panel/common", "Failed to decode response for ui/panel submission [panel: "+panelIdSubmitted_+", form: "+formId+"].", e);
-        }
-
-        if(400>response.status)
-        {
-          if(null==responseObject)
-          {
-            debug("ui/panel/common", "RAW Response", responseText);
-          }
-          else
-          {
-            if(responseObject.exception)
-              ui_panel_raise_exception(responseObject.exception);
-
-            ui_panel_redraw(responseObject);
-          }
+          debug("ui/panel/common", "RAW Response", responseText);
         }
         else
         {
-          error("ui/panel/common", "Received error for ui/panel submission [panel: "+panelIdSubmitted_+", form: "+formId+"].", null==responseObject?responseText:responseObject);
+          if(responseObject.exception)
+            ui_panel_raise_exception(responseObject.exception);
+          
+          ui_panel_redraw(responseObject);
         }
 
         if(trigger_ && trigger_[TRIGGER_ON_RESPONSE])

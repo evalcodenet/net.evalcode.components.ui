@@ -71,9 +71,10 @@
 
       ui_panel_submit_static(panelIdUpload, TYPE_PANEL_UPLOAD_FILE, METHOD_PANEL_UPLOAD_FILE_STATUS, {"file": apcUploadProgress.value}, function(response_)
       {
-        if("false"!=response_.responseText)
+        var response=eval(response_.responseText);
+        if(response && response[0] && "false"!=response[0].content)
         {
-          var data=eval("["+response_.responseText+"]")[0];
+          var data=response[0].content;
           var percent=Math.round((100/data.total)*data.current, 2);
 
           panelUploadProgressInner.width(percent+"%");
