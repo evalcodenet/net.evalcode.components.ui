@@ -1,6 +1,9 @@
 <?php
 
 
+namespace Components;
+
+
   /**
    * Ui_Panel_Frame
    *

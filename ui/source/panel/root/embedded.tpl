@@ -1,3 +1,4 @@
+<? namespace Components; ?>
 <script type="text/javascript">
   var ui_panel_debug=<? if(Debug::enabled()): ?>true<? else: ?>false<? endif; ?>;
   var ui_panel_scripts=[];

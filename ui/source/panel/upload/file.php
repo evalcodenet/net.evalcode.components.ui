@@ -1,6 +1,9 @@
 <?php
 
 
+namespace Components;
+
+
   /**
    * Ui_Panel_Upload_File
    *
@@ -15,7 +18,7 @@
   {
     // PROPERTIES
     public static $implArchives=array(
-      'application/zip'=>'ZipArchive'
+      'application/zip'=>'\ZipArchive'
     );
 
     public $fileExtensionsAllowed=array();
@@ -365,7 +368,7 @@
       foreach($_FILES as $file)
       {
         $target=self::getTemporaryUploadPath($uploadSessionId)->getFile($file['name']);
-        if(false===@move_uploaded_file($file['tmp_name'], $target->getPathAsString()))
+        if(false===move_uploaded_file($file['tmp_name'], $target->getPathAsString()))
           $failed[$file['name']]=$file['error'];
       }
 
@@ -374,7 +377,7 @@
 
     /*private*/ static function status()
     {
-      return @apc_fetch('upload_'.$_REQUEST[Ui_Panel::getSubmittedPanelId().'-file']);
+      return apc_fetch('upload_'.$_REQUEST[Ui_Panel::getSubmittedPanelId().'-file']);
     }
 
     /*private*/ static function cleanup($uploadSessionId_)

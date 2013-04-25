@@ -1,6 +1,9 @@
 <?php
 
 
+namespace Components;
+
+
   /**
    * Ui_Panel
    *
@@ -322,10 +325,11 @@
       if($this instanceof Ui_Panel_Root)
         $this->initialize();
 
-      $type=new ReflectionClass(get_class($this));
-      $this->addClass(strtr(strtolower($type->name), '-', '_'));
+      $type=new \ReflectionObject($this);
+
+      $this->addClass(strtr(strtolower($type->getShortName()), '-', '_'));
       while($type=$type->getParentClass())
-        $this->addClass(strtr(strtolower($type->name), '-', '_'));
+        $this->addClass(strtr(strtolower($type->getShortName()), '-', '_'));
 
       if($this->isActiveForm())
         $this->addClass('ui_panel_form');

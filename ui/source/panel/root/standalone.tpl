@@ -1,3 +1,4 @@
+<? namespace Components; ?>
 <!DOCTYPE html>
 <html>
   <head>

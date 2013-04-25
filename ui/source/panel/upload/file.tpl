@@ -1,3 +1,4 @@
+<? namespace Components; ?>
 <? $this->printErrors(); ?>
 <? $countFiles=$this->countFiles(); ?>
 <div class="ui_panel_upload_file_files">

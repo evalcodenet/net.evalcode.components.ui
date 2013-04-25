@@ -139,16 +139,20 @@
         ui_panel_dump_debug(response);
 
         var responseText=response.responseText;
-        var responseObject=eval(responseText);
         
+        try
+        {
+          var responseObject=eval(responseText);
+        }
+        catch(e)
+        {
+          error("ui/panel/common", responseText);
+        }
+
         if(responseObject && responseObject[0])
           responseObject=responseObject[0];
 
-        if(null==responseObject)
-        {
-          debug("ui/panel/common", "RAW Response", responseText);
-        }
-        else
+        if(responseObject)
         {
           if(responseObject.exception)
             ui_panel_raise_exception(responseObject.exception);

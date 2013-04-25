@@ -1,6 +1,9 @@
 <?php
 
 
+namespace Components;
+
+
   /**
    * Ui_Panel_Datetime
    *
@@ -21,7 +24,7 @@
       $this->setTemplate(__DIR__.'/datetime.tpl');
 
       if(!$value=$this->getValue());
-        $this->setValue(new DateTime());
+        $this->setValue(new \DateTime());
     }
     //--------------------------------------------------------------------------
   }

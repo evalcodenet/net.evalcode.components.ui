@@ -1,3 +1,4 @@
+<? namespace Components; ?>
 <div id="<?= $this->id(); ?>">
   <? /* TODO Initialize date/time picker & localize... */ ?>
   <input id="<?= $this->id(); ?>-date" name="<?= $this->id(); ?>-date" type="text" value="<?= $this->value->format(translate('common/date/pattern/short')); ?>" />

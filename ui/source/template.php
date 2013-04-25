@@ -1,6 +1,9 @@
 <?php
 
 
+namespace Components;
+
+
   /**
    * Ui_Template
    *
@@ -85,7 +88,7 @@
 
     public function hashCode()
     {
-      return spl_object_hash($this);
+      return object_hash($this);
     }
 
     public function equals($object_)
