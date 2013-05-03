@@ -14,7 +14,7 @@ namespace Components;
    *
    * @property Ui_Panel_Root $root
    */
-  class Ui_Panel
+  class Ui_Panel implements Object
   {
     // PREDEFINED PROPERTIES
     const JS_TRIGGER_ON_CALLBACK_SUBMIT=1;
@@ -403,7 +403,6 @@ namespace Components;
 
 
     // STATIC ACCESSORS
-    // TODO Super-type 'Http_Scriptlet'
     public static function getSubmittedPanelId()
     {
       return self::$m_submittedPanelId;
@@ -417,28 +416,9 @@ namespace Components;
 
 
     // OVERRIDES/IMPLEMENTS
-    public function hashCode()
+    public function __isset($name_)
     {
-      return spl_object_hash($this);
-    }
-
-    public function equals($object_)
-    {
-      if($object_ instanceof self)
-        $this->hashCode()===$object_->hashCode();
-
-      return false;
-    }
-
-    public function __toString()
-    {
-      return sprintf('%s@%s{id: %s, name: %s, value: %s}',
-        __CLASS__,
-        $this->hashCode(),
-        $this->m_id,
-        $this->m_name,
-        $this->m_value
-      );
+      return isset($this->m_children[$name_]);
     }
 
     public function __get($name_)
@@ -466,9 +446,40 @@ namespace Components;
       ));
     }
 
-    public function __isset($name_)
+    /**
+     * (non-PHPdoc)
+     * @see Components.Object::hashCode()
+     */
+    public function hashCode()
     {
-      return isset($this->m_children[$name_]);
+      return object_hash($this);
+    }
+
+    /**
+     * (non-PHPdoc)
+     * @see Components.Object::equals()
+     */
+    public function equals($object_)
+    {
+      if($object_ instanceof self)
+        $this->hashCode()===$object_->hashCode();
+
+      return false;
+    }
+
+    /**
+     * (non-PHPdoc)
+     * @see Components.Object::__toString()
+     */
+    public function __toString()
+    {
+      return sprintf('%s@%s{id: %s, name: %s, value: %s}',
+        __CLASS__,
+        $this->hashCode(),
+        $this->m_id,
+        $this->m_name,
+        $this->m_value
+      );
     }
     //--------------------------------------------------------------------------
 

@@ -75,6 +75,9 @@ namespace Components;
 
 
     // STATIC ACCESSORS
+    /**
+     * @see Components.Enumeration::values()
+     */
     public static function values()
     {
       return self::$m_types;
@@ -88,7 +91,7 @@ namespace Components;
      * @param string $value_
      * @param string $title_
      *
-     * @return Ui_Panel_Input
+     * @return \Components\Ui_Panel_Input
      */
     public function create($name_, $value_=null, $title_=null)
     {

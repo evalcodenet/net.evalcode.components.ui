@@ -12,7 +12,7 @@ namespace Components;
    *
    * @author evalcode.net
    */
-  class Ui_Template
+  class Ui_Template implements Object
   {
     // ACCESSORS/MUTATORS
     /**
@@ -86,11 +86,19 @@ namespace Components;
       return false;
     }
 
+    /**
+     * (non-PHPdoc)
+     * @see Components.Object::hashCode()
+     */
     public function hashCode()
     {
       return object_hash($this);
     }
 
+    /**
+     * (non-PHPdoc)
+     * @see Components.Object::equals()
+     */
     public function equals($object_)
     {
       if($object_ instanceof self)
@@ -99,6 +107,10 @@ namespace Components;
       return false;
     }
 
+    /**
+     * (non-PHPdoc)
+     * @see Components.Object::__toString()
+     */
     public function __toString()
     {
       return sprintf('%s@%s{}', __CLASS__, $this->hashCode());
