@@ -14,7 +14,7 @@ namespace Components;
    */
   class Ui_Template implements Object
   {
-    // ACCESSORS/MUTATORS
+    // ACCESSORS
     /**
      * Renders template for given path and returns rendered contents.
      *
@@ -44,7 +44,7 @@ namespace Components;
     //--------------------------------------------------------------------------
 
 
-    // OVERRIDES/IMPLEMENTS
+    // OVERRIDES
     public function __call($name_, array $params_=array())
     {
       if(array_key_exists($name_, $this->m_members))

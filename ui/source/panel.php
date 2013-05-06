@@ -68,7 +68,7 @@ namespace Components;
     //--------------------------------------------------------------------------
 
 
-    // ACCESSORS/MUTATORS
+    // ACCESSORS
     public function add(Ui_Panel $panel_)
     {
       $this->m_children[$panel_->m_name]=$panel_;
@@ -415,7 +415,7 @@ namespace Components;
     //--------------------------------------------------------------------------
 
 
-    // OVERRIDES/IMPLEMENTS
+    // OVERRIDES
     public function __isset($name_)
     {
       return isset($this->m_children[$name_]);

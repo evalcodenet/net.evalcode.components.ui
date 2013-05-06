@@ -43,7 +43,7 @@ namespace Components;
     //--------------------------------------------------------------------------
 
 
-    // ACCESSORS/MUTATORS
+    // ACCESSORS
     public function clear()
     {
       $this->m_params=array();
@@ -51,7 +51,7 @@ namespace Components;
     //--------------------------------------------------------------------------
 
 
-    // OVERRIDES/IMPLEMENTS
+    // OVERRIDES
     public function __toString()
     {
       return sprintf('%s@%s{}', __CLASS__, $this->hashCode());

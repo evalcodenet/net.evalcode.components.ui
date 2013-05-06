@@ -35,7 +35,7 @@ namespace Components;
     //--------------------------------------------------------------------------
 
 
-    // ACCESSORS/MUTATORS
+    // ACCESSORS
     public function countFiles()
     {
       return count($this->m_files);

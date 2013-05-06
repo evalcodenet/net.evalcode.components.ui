@@ -44,7 +44,7 @@ namespace Components;
     //--------------------------------------------------------------------------
 
 
-    // ACCESSORS/MUTATORS
+    // ACCESSORS
     public function getTabIndex(Ui_Panel $tab_)
     {
       $index=array_flip($this->m_index);
@@ -105,7 +105,7 @@ namespace Components;
     //--------------------------------------------------------------------------
 
 
-    // OVERRIDES/IMPLEMENTS
+    // OVERRIDES
     public function add(UI_Panel $panel_)
     {
       parent::add($panel_);
