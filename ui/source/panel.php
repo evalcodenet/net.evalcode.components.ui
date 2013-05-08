@@ -13,6 +13,7 @@ namespace Components;
    * @author evalcode.net
    *
    * @property Ui_Panel_Root $root
+   * @property Ui_Scriptlet $scriptlet
    */
   class Ui_Panel implements Object
   {
@@ -342,7 +343,13 @@ namespace Components;
         $panel=$this;
         $tree=array($this->m_name.':'.get_class($this));
         while($panel=$panel->m_parent)
+        {
+          if($panel instanceof Ui_Panel_Root)
+            break;
+
           $tree[]=$panel->m_name.':'.get_class($panel);
+        }
+
         $tree=array_reverse($tree);
 
         printf(
@@ -423,6 +430,9 @@ namespace Components;
 
     public function __get($name_)
     {
+      if('scriptlet'===$name_)
+        return $this->root->scriptlet;
+
       if('root'===$name_)
       {
         $panel=$this;
@@ -636,7 +646,7 @@ namespace Components;
 
       $this->onRetrieveValue();
 
-      if(null!==$this->m_callback && self::getSubmittedPanelId()===$this->m_id)
+      if(null!==$this->m_callback && self::$m_submittedPanelId===$this->m_id)
         call_user_func_array($this->m_callback, array($this));
     }
 
@@ -650,7 +660,7 @@ namespace Components;
 
     /*private*/ function hasCallbackAjax()
     {
-      return Ui_Panel_Root::$ajaxEnabled && $this->hasCallback();
+      return $this->hasCallback();
     }
 
     /*private*/ function callbackAjax(array $params_=array(), $callback_=null)

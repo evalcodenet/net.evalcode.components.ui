@@ -1,5 +1,6 @@
 <? namespace Components; ?>
 <script type="text/javascript">
+  var ui_panel_route="<?= Environment::uriComponents('ui'); ?>";
   var ui_panel_debug=<? if(Debug::enabled()): ?>true<? else: ?>false<? endif; ?>;
   var ui_panel_scripts=[];
   var ui_panel_stylesheets=[];

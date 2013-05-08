@@ -1,11 +1,10 @@
 
 
   // PREDEFINED PROPERTIES
-  var ROUTE_PANEL_ROOT="/components";
-  var ROUTE_PANEL_HTML="/components/get.html";
-  var ROUTE_PANEL_PLAIN="/components/get.txt";
-  var ROUTE_PANEL_JSON="/components/get.json";
-  var ROUTE_PANEL_XML="/components/get.xml";
+  var ROUTE_PANEL_HTML=ui_panel_route+".html";
+  var ROUTE_PANEL_PLAIN=ui_panel_route+".txt";
+  var ROUTE_PANEL_JSON=ui_panel_route+".json";
+  var ROUTE_PANEL_XML=ui_panel_route+".xml";
   var ROUTE_PANEL=ROUTE_PANEL_JSON;
 
   var TRIGGER_ON_SUBMIT=1; 
