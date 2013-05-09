@@ -91,7 +91,7 @@ namespace Components;
      * @param string $value_
      * @param string $title_
      *
-     * @return \Components\Ui_Panel_Input
+     * @return Components\Ui_Panel_Input
      */
     public function create($name_, $value_=null, $title_=null)
     {

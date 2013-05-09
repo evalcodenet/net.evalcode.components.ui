@@ -197,9 +197,32 @@
       function()
       {
         log("ui/panel/common", "Received response for static ui/panel callback submission [panel: "+panelIdSubmitable_+"].", response);
-  
-        ui_panel_dump_debug(response);
-        callbackJsResponse_(response);
+
+        var responseText=response.responseText;
+
+        try
+        {
+          var responseObject=eval(responseText);
+        }
+        catch(e)
+        {
+          error("ui/panel/common", responseText);
+        }
+
+        if(responseObject && responseObject[0])
+          responseObject=responseObject[0];
+
+        if(responseObject)
+        {
+          if(responseObject.exception)
+            ui_panel_raise_exception(responseObject.exception);
+
+          callbackJsResponse_(responseObject);
+        }
+        else
+        {
+          callbackJsResponse_(responseText);
+        }
       }
     );
   }
