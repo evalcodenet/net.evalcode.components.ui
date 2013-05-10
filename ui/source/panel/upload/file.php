@@ -171,7 +171,7 @@ namespace Components;
 
       if(!$this->isValidMimeType($mimeType) || !$this->isValidFileExtension($file_->getExtension()))
       {
-        $this->addError(translatef('ui/panel/upload/file/error/illegal_mimetype', $mimeType->title(), $file_->getName()));
+        $this->addError(I18n::translatef('ui/panel/upload/file/error/illegal_mimetype', $mimeType->title(), $file_->getName()));
         $file_->delete();
 
         return;
@@ -181,7 +181,7 @@ namespace Components;
       {
         if(false===isset(self::$implArchives[$mimeType->name()]))
         {
-          $this->addError(translatef('ui/panel/upload/file/error/unsupported_archive', $mimeType->name()));
+          $this->addError(I18n::translatef('ui/panel/upload/file/error/unsupported_archive', $mimeType->name()));
           $file_->delete();
 
           return;

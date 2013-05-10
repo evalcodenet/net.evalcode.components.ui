@@ -105,10 +105,8 @@ namespace Components;
         throw new Http_Exception('components/ui/scriptlet', Http_Exception::NOT_FOUND);
 
       // ui/panel callback
+      // TODO Http_Scriptlet_Context$Http_Scriptlet_Session
       session_start();
-
-      // TODO Lazy..
-      Config::get('i18n');
 
       $types=array();
       foreach(explode(',', $path) as $type)

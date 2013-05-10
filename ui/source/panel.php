@@ -750,7 +750,7 @@ namespace Components;
           </div>',
           $this->m_id,
           // TODO Localize ...
-          String::escapeHtml(translate('ui/panel/errors/title')),
+          String::escapeHtml(I18n::translate('ui/panel/errors/title')),
           $count,
           $count>$expandThreshold_?'':' expanded'
       );
