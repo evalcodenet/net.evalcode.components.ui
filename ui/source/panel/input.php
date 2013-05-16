@@ -76,7 +76,7 @@ namespace Components;
 
     // STATIC ACCESSORS
     /**
-     * @see Components.Enumeration::values()
+     * @see Components\Enumeration::values()
      */
     public static function values()
     {
@@ -91,11 +91,14 @@ namespace Components;
      * @param string $value_
      * @param string $title_
      *
-     * @return Components\Ui_Panel_Input
+     * @return \Components\Ui_Panel_Input
      */
     public function create($name_, $value_=null, $title_=null)
     {
-      return Ui_Panel_Input::forType($this, $name_, $value_, $title_);
+      $panel=new Ui_Panel_Input($name_, $value_, $title_);
+      $panel->type=$this;
+
+      return $panel;
     }
     //--------------------------------------------------------------------------
 
@@ -103,7 +106,7 @@ namespace Components;
     // IMPLEMENTATION
     private static $m_types=array(
       'HIDDEN',
-      'TEXT',
+      'TEXT'
     );
     //--------------------------------------------------------------------------
   }
