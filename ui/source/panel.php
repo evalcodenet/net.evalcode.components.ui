@@ -448,7 +448,7 @@ namespace Components;
       $trace=debug_backtrace(false);
       $caller=$trace[0];
 
-      throw new Ui_Panel_Exception('components/ui/panel', sprintf('Undefined property: %1$s::$%2$s in %3$s on line %4$s',
+      throw new Ui_Panel_Exception('ui/panel', sprintf('Undefined property: %1$s::$%2$s in %3$s on line %4$s',
         get_class($this),
         $name_,
         $caller['file'],

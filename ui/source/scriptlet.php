@@ -79,7 +79,7 @@ namespace Components;
 
       // TODO Not a submitted form or ajax request - Implement regular routing ...
       if(false===$params->containsKey('ui-panel-submitted'))
-        throw new Http_Exception('components/ui/scriptlet', Http_Exception::NOT_FOUND);
+        throw new Http_Exception('ui/scriptlet', Http_Exception::NOT_FOUND);
 
       Ui_Panel::setSubmittedPanelId(
         $submittedPanelId=$params->get('ui-panel-submitted')
@@ -94,6 +94,7 @@ namespace Components;
         $type=substr($callback, 0, strpos($callback, '::'));
         $method=substr($callback, strpos($callback, '::')+2);
 
+        // TODO Runtime_Classloader::lookupClass(class/name)
         if(class_exists($type) && method_exists($type, $method))
           return $type::$method();
 
@@ -102,7 +103,7 @@ namespace Components;
       }
 
       if(false===$params->containsKey('ui-panel-path') || !($path=$params->get('ui-panel-path')))
-        throw new Http_Exception('components/ui/scriptlet', Http_Exception::NOT_FOUND);
+        throw new Http_Exception('ui/scriptlet', Http_Exception::NOT_FOUND);
 
       // ui/panel callback
       // TODO Http_Scriptlet_Context$Http_Scriptlet_Session
