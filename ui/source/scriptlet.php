@@ -54,7 +54,7 @@ namespace Components;
 
           $response->setException(null);
 
-          if(Debug::enabled() && Runtime::isManagementAccess())
+          if(Debug::active() && Runtime::isManagementAccess())
             $parameters['exception']=$exception->toJson();
         }
 

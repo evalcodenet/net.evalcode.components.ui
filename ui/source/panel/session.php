@@ -12,8 +12,18 @@ namespace Components;
    *
    * @author evalcode.net
    */
-  class Ui_Panel_Session extends Properties
+  class Ui_Panel_Session extends Properties implements Value_String
   {
+    // CONSTRUCTION
+    public function __construct($namespace_)
+    {
+      parent::__construct();
+
+      $this->m_namespace=$namespace_;
+    }
+    //--------------------------------------------------------------------------
+
+
     // STATIC ACCESSORS
     /**
      * @return Ui_Panel_Session
@@ -21,7 +31,7 @@ namespace Components;
     public static function forNamespace($namespace_)
     {
       if(false===isset($_SESSION[$namespace_]))
-        $_SESSION[$namespace_]=new self();
+        $_SESSION[$namespace_]=new self($namespace_);
 
       return $_SESSION[$namespace_];
     }
@@ -40,22 +50,45 @@ namespace Components;
     {
       return self::forNamespace($namespace_)->$key_=$value_;
     }
-    //--------------------------------------------------------------------------
 
-
-    // ACCESSORS
-    public function clear()
+    /**
+     * (non-PHPdoc)
+     * @see \Components\Value_String::valueOf()
+     */
+    public static function valueOf($value_)
     {
-      $this->m_params=array();
+      return static::forNamespace($value_);
     }
     //--------------------------------------------------------------------------
 
 
     // OVERRIDES
+    /**
+     * (non-PHPdoc)
+     * @see \Components\Value_String::value()
+     */
+    public function value()
+    {
+      return $this->m_namespace;
+    }
+
+    /**
+     * (non-PHPdoc)
+     * @see \Components\Properties::__toString()
+     */
     public function __toString()
     {
-      return sprintf('%s@%s{}', __CLASS__, $this->hashCode());
+      return sprintf('%s@%s{namespace: %s}',
+        __CLASS__,
+        $this->hashCode(),
+        $this->m_namespace
+      );
     }
+    //--------------------------------------------------------------------------
+
+
+    // IMPLEMENTATION
+    private $m_namespace;
     //--------------------------------------------------------------------------
   }
 ?>

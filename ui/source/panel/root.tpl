@@ -1,13 +1,13 @@
 <? namespace Components; ?>
 <script type="text/javascript">
   var ui_panel_route="<?= Environment::uriComponents('ui'); ?>";
-  var ui_panel_debug=<? if(Debug::enabled()): ?>true<? else: ?>false<? endif; ?>;
+  var ui_panel_debug=<? if(Debug::active()): ?>true<? else: ?>false<? endif; ?>;
   var ui_panel_scripts=[];
   var ui_panel_stylesheets=[];
 
   if("undefined"!=typeof(console))
   {
-    <? if(Debug::enabled()): ?>
+    <? if(Debug::active()): ?>
       var log=function(namespace_, message_, arg_)
       {
         if("undefined"==typeof(arg_))
