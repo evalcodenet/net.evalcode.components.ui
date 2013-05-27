@@ -11,16 +11,23 @@ namespace Components;
    * @subpackage ui.panel
    *
    * @author evalcode.net
-   *
-   * TODO Replace with 'Http_Scriptlet'
    */
   class Ui_Panel_Root extends Ui_Panel
   {
+    // PROPERTIES
+    /**
+     * @var \Components\Ui_Scriptlet
+     */
     public $scriptlet;
+    //--------------------------------------------------------------------------
+
+
     // INITIALIZATION
     protected function init()
     {
       parent::init();
+
+      $this->hasContainer(false);
 
       $this->setTemplate(__DIR__.'/root.tpl');
 

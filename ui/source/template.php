@@ -25,21 +25,11 @@ namespace Components;
     public function render($templatePath_)
     {
       ob_start();
-      $this->display($templatePath_);
+
+      extract($this->m_members);
+      include $templatePath_;
 
       return ob_get_clean();
-    }
-
-    /**
-     * Renders and displays template for given path.
-     *
-     * @param string $templatePath_
-     */
-    public function display($templatePath_)
-    {
-      extract($this->m_members);
-
-      include $templatePath_;
     }
     //--------------------------------------------------------------------------
 

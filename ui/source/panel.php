@@ -12,8 +12,8 @@ namespace Components;
    *
    * @author evalcode.net
    *
-   * @property Ui_Panel_Root $root
-   * @property Ui_Scriptlet $scriptlet
+   * @property \Components\Ui_Panel_Root $root
+   * @property \Components\Ui_Scriptlet $scriptlet
    */
   class Ui_Panel implements Object
   {
@@ -26,18 +26,25 @@ namespace Components;
     const ELEMENT_LIST='ul';
     const ELEMENT_DEFINITION_LIST='dl';
     const ELEMENT_DEFAULT=self::ELEMENT_BLOCK;
+
+    const MODE_VIEW=1;
+    const MODE_EDIT=2;
     //--------------------------------------------------------------------------
 
 
     // PROPERTIES
     /**
-     * @var Properties
+     * @var \Components\Properties
      */
     public $params;
     /**
-     * @var Ui_Panel_Session
+     * @var \Components\Ui_Panel_Session
      */
     public $session;
+    /**
+     * @var integer
+     */
+    public $mode=self::MODE_EDIT;
     //--------------------------------------------------------------------------
 
 
@@ -105,6 +112,11 @@ namespace Components;
     public function getPath()
     {
       return $this->m_path;
+    }
+
+    public function getPanels()
+    {
+      return $this->m_children;
     }
 
     /**
@@ -336,18 +348,18 @@ namespace Components;
         $this->addClass('ui_panel_form');
 
       if($this->m_hasContainer)
-        printf('<%2$s id="%1$s"%3$s>', $this->m_containerId, $this->m_containerTag, $this->getAttributesAsString());
+        printf('<%2$s id="%1$s" %3$s>', $this->m_containerId, $this->m_containerTag, $this->getAttributesAsString());
 
       if($this->isActiveForm())
       {
         $panel=$this;
-        $tree=array($this->m_name.':'.get_class($this));
+        $tree=array($this->m_name.':'.Runtime_Classloader::lookupName(get_class($this)));
         while($panel=$panel->m_parent)
         {
           if($panel instanceof Ui_Panel_Root)
             break;
 
-          $tree[]=$panel->m_name.':'.get_class($panel);
+          $tree[]=$panel->m_name.':'.Runtime_Classloader::lookupName(get_class($panel));
         }
 
         $tree=array_reverse($tree);
@@ -362,7 +374,7 @@ namespace Components;
 
       $engine=new Ui_Template();
       $this->initTemplateEngine($engine);
-      $engine->display($this->getTemplate());
+      echo $engine->render($this->getTemplate());
 
       if(count($this->m_scripts) || count($this->m_stylesheets))
       {
@@ -595,12 +607,14 @@ namespace Components;
       $engine_->self=$this;
 
       $engine_->id=$this->m_id;
+      $engine_->name=$this->m_name;
       $engine_->title=$this->m_title;
-      $engine_->value=$this->m_value;
       $engine_->params=$this->params;
       $engine_->panels=$this->m_children;
 
-      $engine_->panel=array($this, 'displayPanel');
+      $engine_->value=array($this, 'getValue');
+      $engine_->panel=array($this, '__get');
+      $engine_->display=array($this, 'displayPanel');
       $engine_->attributes=array($this, 'getAttributesAsString');
       $engine_->hasErrors=array($this, 'hasErrors');
       $engine_->getErrors=array($this, 'getErrors');
@@ -612,11 +626,16 @@ namespace Components;
       $engine_->hasCallbackAjax=array($this, 'hasCallbackAjax');
     }
 
+
     protected function onRetrieveValue()
     {
-      if(isset($_REQUEST[$this->m_id]))
+      $params=$this->scriptlet->request->getParams();
+
+      if($params->containsKey($this->m_id))
       {
-        if('null'==($value=$_REQUEST[$this->m_id]))
+        $value=$params->get($this->m_id);
+
+        if('null'===$value)
           $this->m_value=null;
         else
           $this->m_value=$value;

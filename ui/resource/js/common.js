@@ -30,7 +30,46 @@
     if("string"==typeof(exception_))
       exception_=eval("["+exception_+"]")[0];
 
-    error(exception_.type, exception_.message, exception_.trace);
+    error(exception_.type, exception_.message);
+  }
+
+  function ui_panel_values(parent_)
+  {
+    var values=new Array();
+
+    for(var idx in parent_.childNodes)
+    {
+      if(parent_.childNodes[idx].childNodes && 0<parent_.childNodes[idx].childNodes.length)
+        values=values.concat(ui_panel_values(parent_.childNodes[idx]));
+
+      if(parent_.childNodes[idx].name && parent_.childNodes[idx].tagName)
+      {
+        var tagName=parent_.childNodes[idx].tagName.toLowerCase();
+
+        if("input"==tagName || "select"==tagName || "textarea"==tagName)
+        {
+          if(parent_.childNodes[idx].type && "checkbox"==parent_.childNodes[idx].type.toLowerCase())
+          {
+            if(parent_.childNodes[idx].checked)
+            {
+              values.push({
+                "name": parent_.childNodes[idx].name,
+                "value": parent_.childNodes[idx].value
+              });
+            }
+          }
+          else
+          {
+            values.push({
+              "name": parent_.childNodes[idx].name,
+              "value": parent_.childNodes[idx].value
+            });
+          }
+        }
+      }
+    }
+
+    return values;
   }
 
   function ui_panel_submit(panelIdSubmitted_, callback_, params_, trigger_, panelUploadedId_)
@@ -40,7 +79,11 @@
     else
       log("ui/panel/common", "Initiating submission of ui/panel [panel: "+panelIdSubmitted_+"].");
 
-    var submitted=jQuery("#"+panelIdSubmitted_);
+    if(document.getElementById(panelIdSubmitted_))
+      var submitted=jQuery("#"+panelIdSubmitted_);
+    else
+      var submitted=jQuery("#"+panelIdSubmitted_+"-container");
+
     var forms=submitted.parents(".ui_panel_form");
     var form=null;
 
@@ -85,14 +128,13 @@
       return;
     }
 
-    var tmpForm=document.createElement("form");
-    tmpForm.innerHTML=form.innerHTML;
-
-    var parameters=jQuery(tmpForm).serializeArray();
-    tmpForm=null;
+    var parameters=ui_panel_values(form);
 
     var formId=form.id;
     formId=formId.replace(/-container/ig, "");
+
+    if(ui_panel_transfer_sid)
+      parameters.push({"name": "ui-panel-sid", "value": ui_panel_transfer_sid});
 
     parameters.push({"name": "ui-panel-submitted", "value": panelIdSubmitted_});
 
@@ -178,6 +220,9 @@
 
     var parameters=new Array();
 
+    if(ui_panel_transfer_sid)
+      parameters.push({"name": "ui-panel-sid", "value": ui_panel_transfer_sid});
+
     parameters.push({"name": "ui-panel-submitted", "value": panelIdSubmitable_});
     parameters.push({"name": "ui-panel-callback", "value": callbackType_+"::"+callbackMethod_});
 
@@ -232,6 +277,9 @@
     log("ui/panel/common", "Initiating ui/panel request [uri: "+uri_+"].", params_);
 
     var parameters=new Array();
+
+    if(ui_panel_transfer_sid)
+      parameters.push({"name": "ui-panel-sid", "value": ui_panel_transfer_sid});
 
     if("undefined"!=typeof(params_))
     {
@@ -340,28 +388,6 @@
     );
   }
 
-  function ui_panel_session_id()
-  {
-    if(!document.cookie)
-      return null;
-
-    var ldim=document.cookie.search(/PHPSESSID/);
-    var sid=document.cookie;
-
-    if(-1<ldim)
-      sid=document.cookie.substring(ldim+10);
-
-    ldim=sid.indexOf("adminhtml=")
-    if(-1<ldim)
-      sid=sid.substring(ldim+10);
-
-    var rdim=sid.indexOf(";");
-
-    if(0>rdim)
-      return sid;
-
-    return sid.substring(0, rdim);
-  }
 
   ui_panel_disclosure_init();
 

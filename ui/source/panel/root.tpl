@@ -4,6 +4,7 @@
   var ui_panel_debug=<? if(Debug::active()): ?>true<? else: ?>false<? endif; ?>;
   var ui_panel_scripts=[];
   var ui_panel_stylesheets=[];
+  var ui_panel_transfer_sid=<? if(Ui_Scriptlet::$transferSessionId): ?>"<?= session_id(); ?>"<? else: ?>false<? endif; ?>;
 
   if("undefined"!=typeof(console))
   {
@@ -15,6 +16,7 @@
 
         console.log("["+namespace_+"] "+message_, arg_);
       }
+
       var debug=function(namespace_, message_, arg_)
       {
         if("undefined"==typeof(arg_))
@@ -31,6 +33,7 @@
     {
       console.assert(assertion_, "["+namespace_+"] "+message_);
     }
+
     var error=function(namespace_, message_, exception_)
     {
       if("undefined"==typeof(exception_))

@@ -2,7 +2,7 @@
 <? $this->printErrors(); ?>
 <? $countFiles=$this->countFiles(); ?>
 <div class="ui_panel_upload_file_files">
-  <? $this->panel('key'); ?>
+  <? $this->display('key'); ?>
   <div class="ui_panel_disclosure_header">
     <h3 class="title">Files<? if(0<$countFiles): ?> (<?= $countFiles; ?>)<? endif; ?></h3>
     <a href="javascript:void(0);" rel="<?= $this->id; ?>-files" class="ui_panel_disclosure_toggle expanded">collapse</a>

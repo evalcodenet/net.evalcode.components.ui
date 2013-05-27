@@ -15,6 +15,8 @@ namespace Components;
   class Ui_Scriptlet extends Http_Scriptlet
   {
     // PROPERTIES
+    public static $transferSessionId=false;
+
     public $title;
     //--------------------------------------------------------------------------
 
@@ -79,7 +81,7 @@ namespace Components;
 
       // TODO Not a submitted form or ajax request - Implement regular routing ...
       if(false===$params->containsKey('ui-panel-submitted'))
-        throw new Http_Exception('ui/scriptlet', Http_Exception::NOT_FOUND);
+        throw Http_Exception::notFound('ui/scriptlet');
 
       Ui_Panel::setSubmittedPanelId(
         $submittedPanelId=$params->get('ui-panel-submitted')
@@ -90,6 +92,12 @@ namespace Components;
 
       if($params->containsKey('ui-panel-callback'))
       {
+        if(self::$transferSessionId && $params->containsKey('ui-panel-sid'))
+        {
+          session_id($params->get('ui-panel-sid'));
+          session_start();
+        }
+
         $callback=$params->get('ui-panel-callback');
         $type=substr($callback, 0, strpos($callback, '::'));
         $method=substr($callback, strpos($callback, '::')+2);
@@ -103,10 +111,13 @@ namespace Components;
       }
 
       if(false===$params->containsKey('ui-panel-path') || !($path=$params->get('ui-panel-path')))
-        throw new Http_Exception('ui/scriptlet', Http_Exception::NOT_FOUND);
+        throw Http_Exception::notFound('ui/scriptlet');
 
       // ui/panel callback
       // TODO Http_Scriptlet_Context$Http_Scriptlet_Session
+      if(self::$transferSessionId && $params->containsKey('ui-panel-sid'))
+        session_id($params->get('ui-panel-sid'));
+
       session_start();
 
       $types=array();
@@ -125,7 +136,7 @@ namespace Components;
 
       for($i=0, $count=count($names); $i<$count; $i++)
       {
-        $type=$types[$names[$i]];
+        $type=Runtime_Classloader::lookup($types[$names[$i]]);
 
         if(isset($panels[$i-1]->{$names[$i]}))
         {
@@ -161,6 +172,17 @@ namespace Components;
         $this->response->addParameter('redraw', $redraw->getContainerId());
 
         return $redraw->render();
+      }
+
+      // FIXME (CSH) If we allow callbacks to selectivly redraw sub-panels, we need to support multiple redraw panels.
+      foreach($panels[count($panels)-2]->getPanels() as $panel)
+      {
+        if($panel->redraw())
+        {
+          $this->response->addParameter('redraw', $panel->getContainerId());
+
+          return $panel->render();
+        }
       }
     }
 
