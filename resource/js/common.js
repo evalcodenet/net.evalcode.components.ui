@@ -74,6 +74,8 @@
 
   function ui_panel_submit(panelIdSubmitted_, callback_, params_, trigger_, panelUploadedId_)
   {
+    profile_begin();
+
     if(panelUploadedId_)
       log("ui/panel/common", "Continuing submission of ui/panel [panel: "+panelIdSubmitted_+"].");
     else
@@ -94,6 +96,8 @@
     else
     {
       log("ui/panel/common", "Unable to resolve enclosing form for submitted panel [submitted: "+panelIdSubmitted_+"].");
+
+      profile_end();
 
       return;
     }
@@ -125,6 +129,8 @@
         ui_panel_submit(panelIdSubmitted_, callback_, params_, trigger_, nextPanelUploadId);
       });
 
+      profile_end();
+
       return;
     }
 
@@ -149,7 +155,7 @@
 
     var request=jQuery.ajaxSetup({
       type: "POST",
-      url: ROUTE_PANEL,
+      url: ui_panel_get_route(),
       async: true
     });
 
@@ -163,6 +169,8 @@
       if(false==eval(triggerMethod+"(request, parameters, triggerArgs);"))
       {
         log("ui/panel/common", "Submission of ui/panel canceled by trigger [panel: "+panelIdSubmitted_+", trigger: "+triggerMethod+"].");
+
+        profile_end();
 
         return;
       }
@@ -180,7 +188,7 @@
         ui_panel_dump_debug(response);
 
         var responseText=response.responseText;
-        
+
         try
         {
           var responseObject=eval(responseText);
@@ -210,12 +218,16 @@
 
           eval(triggerMethod+"(response, triggerArgs);");
         }
+
+        profile_end();
       }
     );
   }
 
   function ui_panel_submit_static(panelIdSubmitable_, callbackType_, callbackMethod_, params_, callbackJsResponse_)
   {
+    profile_begin();
+
     log("ui/panel/common", "Submitting static ui/panel callback [panel: "+panelIdSubmitable_+"].", params_);
 
     var parameters=new Array();
@@ -234,7 +246,7 @@
 
     jQuery.ajaxSetup({
       type: "POST",
-      url: ROUTE_PANEL,
+      url: ui_panel_get_route(),
       async: true
     });
 
@@ -268,12 +280,16 @@
         {
           callbackJsResponse_(responseText);
         }
+
+        profile_end();
       }
     );
   }
 
   function ui_panel_request(uri_, params_, callbackJsResponse_)
   {
+    profile_begin();
+
     log("ui/panel/common", "Initiating ui/panel request [uri: "+uri_+"].", params_);
 
     var parameters=new Array();
@@ -300,6 +316,8 @@
   
         ui_panel_dump_debug(response);
         callbackJsResponse_(response);
+
+        profile_end();
       }
     );
   }
@@ -388,6 +406,37 @@
     );
   }
 
+  function ui_panel_xdebug_profile_enabled()
+  {
+    if(-1<location.href.indexOf("XDEBUG_PROFILE"))
+      return true;
 
-  ui_panel_disclosure_init();
+    return false;
+  }
+
+  function ui_panel_get_route()
+  {
+    if(ui_panel_xdebug_profile_enabled())
+      return ROUTE_PANEL+"?XDEBUG_PROFILE=1";
+
+    return ROUTE_PANEL;
+  }
+
+
+  // INTERNAL
+  function ui_panel_initialize()
+  {
+    if("undefined"==typeof(jQuery) || null==document.getElementById(ui_panel_root_id+"-loaded"))
+    {
+      setTimeout(ui_panel_initialize, 10);
+
+      return;
+    }
+
+    debug("ui/panel", "Root panel loaded [id: "+ui_panel_root_id+"].");
+    ui_panel_disclosure_init();
+  }
+
+
+  ui_panel_initialize();
 

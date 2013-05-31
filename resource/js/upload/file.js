@@ -29,7 +29,7 @@
 
     var form=document.createElement("form");
     form.method="POST";
-    form.action=ROUTE_PANEL;
+    form.action=ui_panel_get_route();
     form.enctype="multipart/form-data";
     form.target=frame.id;
     container.appendChild(form);
