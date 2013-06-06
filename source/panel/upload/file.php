@@ -167,9 +167,9 @@ namespace Components;
 
     private function stashFile(Io_File $file_, $subPath_=null)
     {
-      $mimeType=$file_->getMimeType();
+      $mimeType=$file_->getMimetype();
 
-      if(!$this->isValidMimeType($mimeType) || !$this->isValidFileExtension($file_->getExtension()))
+      if(!$this->isValidMimetype($mimeType) || !$this->isValidFileExtension($file_->getExtension()))
       {
         $this->addError(I18n::translatef('ui/panel/upload/file/error/illegal_mimetype', $mimeType->title(), $file_->getName()));
         $file_->delete();
@@ -208,7 +208,7 @@ namespace Components;
       $this->m_files[$subPath_.$file->getName()]=$file;
     }
 
-    private function isValidMimeType(Io_MimeType $mimeType_)
+    private function isValidMimetype(Io_Mimetype $mimeType_)
     {
       if(in_array($mimeType_->name(), $this->mimeTypesForbidden))
         return false;
@@ -226,7 +226,7 @@ namespace Components;
 
 
     // TEMPLATE METHODS
-    /*private*/ function printFile(Io_File $file_, $subPath_, $mimeTypeIconSize_=Io_MimeType::ICON_SIZE_64)
+    /*private*/ function printFile(Io_File $file_, $subPath_, $mimeTypeIconSize_=Io_Mimetype::ICON_SIZE_64)
     {
       $actions=array();
       foreach($this->m_fileActionsJs as $name=>$action)
@@ -251,7 +251,7 @@ namespace Components;
 
       echo '<div class="file">';
 
-      if($mimeTypeIconSize_>Io_MimeType::ICON_SIZE_16)
+      if($mimeTypeIconSize_>Io_Mimetype::ICON_SIZE_16)
       {
         printf('
           <div class="icon">
@@ -259,7 +259,7 @@ namespace Components;
           </div>
           <div class="info">
             <a href="javascript:void(0);" class="label">%2$s</a>',
-            $file_->getMimeType()->icon($mimeTypeIconSize_),
+            $file_->getMimetype()->icon($mimeTypeIconSize_),
             $subPath_
         );
 
@@ -271,7 +271,7 @@ namespace Components;
           <div class="info">
             <img src="%1$s" alt="%2$s" title="%2$s"/>
             <a href="javascript:void(0);" class="label">%2$s</a>',
-            $file_->getMimeType()->icon($mimeTypeIconSize_),
+            $file_->getMimetype()->icon($mimeTypeIconSize_),
             $subPath_
         );
 
@@ -285,7 +285,7 @@ namespace Components;
           </div>
           <br class="clear"/>
         </div>',
-          ucfirst($file_->getMimeType()->title()),
+          ucfirst($file_->getMimetype()->title()),
           $file_->getSize()->formatted(2),
           implode(' | ', $actions)
       );

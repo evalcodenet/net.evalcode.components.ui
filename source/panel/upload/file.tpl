@@ -12,11 +12,11 @@
     <? $i=0; ?>
     <? if(0<$countFiles): ?>
       <? if(12<$countFiles): ?>
-        <? $sizeIcon=Io_MimeType::ICON_SIZE_16; ?>
+        <? $sizeIcon=Io_Mimetype::ICON_SIZE_16; ?>
       <? elseif(6<$countFiles): ?>
-        <? $sizeIcon=Io_MimeType::ICON_SIZE_32; ?>
+        <? $sizeIcon=Io_Mimetype::ICON_SIZE_32; ?>
       <? else: ?>
-        <? $sizeIcon=Io_MimeType::ICON_SIZE_64; ?>
+        <? $sizeIcon=Io_Mimetype::ICON_SIZE_64; ?>
       <? endif; ?>
       <ul class="files_<?= $sizeIcon; ?>">
         <? foreach($this->getFiles() as $subPath=>$file): ?>

@@ -44,7 +44,7 @@ namespace Components;
       if(null===$exception)
         $exception=$response->getException();
 
-      if(Io_MimeType::APPLICATION_JSON()->equals($response->getMimeType()))
+      if(Io_Mimetype::APPLICATION_JSON()->equals($response->getMimetype()))
       {
         $parameters=$response->getParameters();
         $parameters['content']=$content;
