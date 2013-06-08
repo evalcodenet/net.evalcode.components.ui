@@ -2,12 +2,53 @@
 <script type="text/javascript">
   if("undefined"==typeof(ui_panel_root_id))
   {
-    var ui_panel_route="<?= Environment::uriComponents('ui'); ?>";
+    <? if(Ui_Scriptlet::$embedded): ?>
+      var ui_panel_route="<?= Environment::uriComponentsEmbedded('ui'); ?>";
+    <? else: ?>
+      var ui_panel_route="<?= Environment::uriComponents('ui'); ?>";
+    <? endif; ?>
     var ui_panel_debug=<? if(Debug::active()): ?>true<? else: ?>false<? endif; ?>;
     var ui_panel_scripts=[];
     var ui_panel_stylesheets=[];
     var ui_panel_transfer_sid=<? if(Ui_Scriptlet::$transferSessionId): ?>"<?= session_id(); ?>"<? else: ?>false<? endif; ?>;
     var ui_panel_root_id="<?= $this->id(); ?>";
+
+    var ui_panel_resource_callbacks=[];
+    var ui_panel_resource_callbacks_pending=new Array();
+
+
+    ui_panel_resource_callbacks_invoke=function()
+    {
+      var next=null;
+
+      if(next=ui_panel_resource_callbacks_pending.pop())
+      {
+        if("string"==typeof(next))
+        {
+          try
+          {
+            eval(next);
+          }
+          catch(e)
+          {
+            ui_panel_resource_callbacks_pending.push(next);
+          }
+        }
+        else if("function"==typeof(next))
+        {
+          next();
+        }
+
+        setTimeout("ui_panel_resource_callbacks_invoke()", 11);
+      }
+    }
+
+    ui_panel_resource_callback_add=function(name_, callback_)
+    {
+      ui_panel_resource_callbacks_pending.push(callback_);
+      ui_panel_resource_callbacks_invoke();
+    }
+
 
     if("undefined"==typeof(console))
     {
@@ -70,21 +111,10 @@
       if(condition_ && !eval(condition_))
         return;
 
-      if(ui_panel_scripts && ui_panel_scripts[name_])
-      {
-        if("function"==typeof(callback_))
-        {
-          log("ui/panel/root", "Executing callback for loaded script [name: "+name_+", callback: "+callback_+"].");
-          callback_();
-        }
-        else if("string"==typeof(callback_))
-        {
-          log("ui/panel/root", "Executing callback for loaded script [name: "+name_+", callback: "+callback_+"].");
-          eval(callback_);
-        }
+      ui_panel_resource_callback_add(name_, callback_);
 
+      if(ui_panel_scripts[name_])
         return;
-      }
 
       ui_panel_scripts[name_]=name_;
 
@@ -93,36 +123,15 @@
       else
         async_=async_?true:false;
 
-      log("ui/panel/root", "Loading script [name: "+name_+", modified: "+timestampLastModification_+", async: "+async_+"].");
+      log("ui/panel/root", "Loading script [name: "+name_+", modified: "+timestampLastModification_+", async: "+async_+", callback: "+callback_+"].");
 
-      if("undefined"==typeof(jQuery))
-      {
-        var elementsHead=document.getElementsByTagName("head");
-        var elementScript=document.createElement("script");
-        elementScript.type="text/javascript";
-        elementScript.async=async_;
-        elementScript.src=name_+"?"+timestampLastModification_;
+      var elementsHead=document.getElementsByTagName("head");
+      var elementScript=document.createElement("script");
+      elementScript.type="text/javascript";
+      elementScript.async=async_;
+      elementScript.src=name_+"?"+timestampLastModification_;
 
-        elementsHead[0].appendChild(elementScript);
-      }
-      else
-      {
-        jQuery.getScript(name_,
-          function()
-          {
-            if("function"==typeof(callback_))
-            {
-              log("ui/panel/root", "Executing callback for loaded script [name: "+name_+", callback: "+callback_+"].");
-              callback_();
-            }
-            else if("string"==typeof(callback_))
-            {
-              log("ui/panel/root", "Executing callback for loaded script [name: "+name_+", callback: "+callback_+"].");
-              eval(callback_);
-            }
-          }
-        );
-      }
+      elementsHead[0].appendChild(elementScript);
     }
 
     ui_panel_stylesheet_add=function(name_, async_, media_, timestampLastModification_)

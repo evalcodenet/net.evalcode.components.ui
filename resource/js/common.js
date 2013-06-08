@@ -433,8 +433,9 @@
       return;
     }
 
-    debug("ui/panel", "Root panel loaded [id: "+ui_panel_root_id+"].");
     ui_panel_disclosure_init();
+
+    log("ui/panel", "Root panel loaded [id: "+ui_panel_root_id+"].");
   }
 
 

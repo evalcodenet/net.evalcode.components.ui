@@ -20,7 +20,7 @@ namespace Components;
       $root=new Ui_Panel_Root('ui-panel');
       $root->scriptlet=$this;
 
-      $root->add(new Crm_Panel_Entity_Properties('properties'));
+      $root->add(new Ui_Panel_Datetime('date'));
 
       $engine=new Ui_Template();
       $engine->panel=$root;

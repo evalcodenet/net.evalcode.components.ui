@@ -12,7 +12,7 @@ namespace Components;
    *
    * @author evalcode.net
    *
-   * @property \Components\Ui_Panel_Root $root
+   * @property \Components\Ui_Panel $root
    * @property \Components\Ui_Scriptlet $scriptlet
    */
   class Ui_Panel implements Object
@@ -51,14 +51,16 @@ namespace Components;
     // CONSTRUCTION
     public function __construct($name_, $value_=null, $title_=null)
     {
-      $this->m_name=$this->m_id=$name_;
+      $this->m_id=$name_;
+      $this->m_path=$name_;
+      $this->m_name=$name_;
 
       $this->m_value=$value_;
       $this->m_title=$title_;
 
-      $this->params=new Properties();
-
       $this->m_template=__DIR__.'/panel.tpl';
+
+      $this->params=new Properties();
     }
     //--------------------------------------------------------------------------
 
@@ -335,9 +337,6 @@ namespace Components;
 
     public function display()
     {
-      if($this instanceof Ui_Panel_Root)
-        $this->initialize();
-
       $type=new \ReflectionObject($this);
 
       $this->addClass(strtr(strtolower($type->getShortName()), '-', '_'));
@@ -353,13 +352,13 @@ namespace Components;
       if($this->isActiveForm())
       {
         $panel=$this;
-        $tree=array($this->m_name.':'.Runtime_Classloader::lookupName(get_class($this)));
+        $type=String::typeToPath(get_class($this));
+        $tree=array("{$this->m_name}:$type");
+
         while($panel=$panel->m_parent)
         {
-          if($panel instanceof Ui_Panel_Root)
-            break;
-
-          $tree[]=$panel->m_name.':'.Runtime_Classloader::lookupName(get_class($panel));
+          $type=String::typeToPath(get_class($panel));
+          $tree[]="{$panel->m_name}:{$type}";
         }
 
         $tree=array_reverse($tree);
@@ -374,6 +373,7 @@ namespace Components;
 
       $engine=new Ui_Template();
       $this->initTemplateEngine($engine);
+
       echo $engine->render($this->getTemplate());
 
       if(count($this->m_scripts) || count($this->m_stylesheets))
@@ -645,25 +645,16 @@ namespace Components;
 
     private function initialize()
     {
-      $path=array();
-      $panel=$this;
-
-      do
-      {
-        array_unshift($path, $panel->m_name);
-      }
-      while($panel=$panel->m_parent);
-
-      $this->m_path=$path;
-      $this->m_id=implode('-', $path);
+      $this->m_id=$this->m_parent->m_id.'-'.$this->m_name;
+      $this->m_path=$this->m_parent->m_path.'-'.$this->m_name;
       $this->m_containerId="{$this->m_id}-container";
 
       $this->session=Ui_Panel_Session::forNamespace($this->m_id);
 
+      $this->onRetrieveValue();
+
       $this->init();
       $this->afterInit();
-
-      $this->onRetrieveValue();
 
       if(null!==$this->m_callback && self::$m_submittedPanelId===$this->m_id)
         call_user_func_array($this->m_callback, array($this));

@@ -23,9 +23,9 @@ namespace Components;
 
 
     // INITIALIZATION
-    protected function init()
+    public function __construct($name_)
     {
-      parent::init();
+      parent::__construct($name_, null, null);
 
       $this->hasContainer(false);
 
@@ -33,8 +33,8 @@ namespace Components;
 
       $this->addStylesheet('ui/common');
 
-      $this->addScript('ui/jquery/jquery-1.9.1', '\'undefined\'==typeof(jQuery)');
       $this->addScript('ui/common');
+      $this->addScript('ui/jquery/jquery-1.9.1', '\'undefined\'==typeof(jQuery)');
     }
     //--------------------------------------------------------------------------
   }

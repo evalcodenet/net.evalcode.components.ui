@@ -15,6 +15,7 @@ namespace Components;
   class Ui_Scriptlet extends Http_Scriptlet
   {
     // PROPERTIES
+    public static $embedded=false;
     public static $transferSessionId=false;
 
     public $title;
@@ -87,85 +88,58 @@ namespace Components;
         $submittedPanelId=$params->get('ui-panel-submitted')
       );
 
-      $callbackPanelId=null;
-      $callbackPanelMethod=null;
-
-      if($params->containsKey('ui-panel-callback'))
-      {
-        if(self::$transferSessionId && $params->containsKey('ui-panel-sid'))
-        {
-          session_id($params->get('ui-panel-sid'));
-          session_start();
-        }
-
-        $callback=$params->get('ui-panel-callback');
-        $type=substr($callback, 0, strpos($callback, '::'));
-        $method=substr($callback, strpos($callback, '::')+2);
-
-        // TODO Runtime_Classloader::lookupClass(class/name)
-        if(class_exists($type) && method_exists($type, $method))
-          return $type::$method();
-
-        $callbackPanelId=$type;
-        $callbackPanelMethod=$method;
-      }
-
-      if(false===$params->containsKey('ui-panel-path') || !($path=$params->get('ui-panel-path')))
-        throw Http_Exception::notFound('ui/scriptlet');
-
-      // ui/panel callback
-      // TODO Http_Scriptlet_Context$Http_Scriptlet_Session
+      // TODO Store & verify possibly correct session ids per useragent+host to prevent stealing ..
       if(self::$transferSessionId && $params->containsKey('ui-panel-sid'))
         session_id($params->get('ui-panel-sid'));
 
       session_start();
 
+      if($params->containsKey('ui-panel-callback'))
+      {
+        $callback=$params->get('ui-panel-callback');
+
+        if(false!==($pos=strpos($callback, '::')))
+        {
+          $type=substr($callback, 0, $pos);
+          $method=substr($callback, $pos+2);
+
+          // TODO Runtime_Classloader::lookupClass(class/name)
+          if(class_exists($type) && method_exists($type, $method))
+            return $type::$method();
+        }
+      }
+
+      if(false===$params->containsKey('ui-panel-path') || !($path=$params->get('ui-panel-path')))
+        throw Http_Exception::notFound('ui/scriptlet');
+
+      $redraw=null;
+      $panels=array();
+      $submittedPanel=null;
+
       $types=array();
       foreach(explode(',', $path) as $type)
         $types[substr($type, 0, strpos($type, ':'))]=substr($type, strpos($type, ':')+1);
 
-      $root=new Ui_Panel_Root('ui-panel');
-      $root->scriptlet=$this;
-
-      $callbackPanel=null;
-      $submittedPanel=null;
-
-      $redraw=null;
-      $panels=array(-1=>$root);
       $names=array_keys($types);
-
       for($i=0, $count=count($names); $i<$count; $i++)
       {
-        $type=Runtime_Classloader::lookup($types[$names[$i]]);
+        $type=String::pathToType($types[$names[$i]]);
 
-        if(isset($panels[$i-1]->{$names[$i]}))
-        {
-          if(null===$redraw && $panels[$i-1]->{$names[$i]}->redraw())
-            $redraw=$panels[$i-1]->{$names[$i]};
-        }
-        else
-        {
-          $panels[$i-1]->add($panels[$i]=new $type($names[$i]));
-          if(null===$redraw && $panels[$i]->redraw())
-            $redraw=$panels[$i];
-        }
+        $panels[$i]=new $type($names[$i]);
+        if($panels[$i] instanceof Ui_Panel_Root)
+          $panels[$i]->scriptlet=$this;
+        else if(false===isset($panels[$i-1]->{$names[$i]}))
+          $panels[$i-1]->add($panels[$i]);
 
-        if(null!==$callbackPanelId && $callbackPanelId===$panels[$i]->getId())
-          $callbackPanel=$panels[$i];
         if($submittedPanelId===$panels[$i]->getId())
           $submittedPanel=$panels[$i];
+
+        if(null===$redraw && $panels[$i]->redraw())
+          $redraw=$panels[$i];
       }
 
-      if(null!==$callbackPanelId && null===$callbackPanel)
-        $callbackPanel=$panels[count($panels)-1]->getPanelForId($callbackPanelId);
-
-      if(null!==$callbackPanel)
-      {
-        if(null===$submittedPanel)
-          $submittedPanel=$panels[count($panels)-1]->getPanelForId($submittedPanelId);
-
-        $callbackPanel->$callbackPanelMethod($submittedPanel);
-      }
+      if(null===$submittedPanel)
+        $submittedPanel=$panels[count($panels)-1]->getPanelForId($submittedPanelId);
 
       if(null!==$redraw)
       {
@@ -175,7 +149,7 @@ namespace Components;
       }
 
       // FIXME (CSH) If we allow callbacks to selectivly redraw sub-panels, we need to support multiple redraw panels.
-      foreach($panels[count($panels)-2]->getPanels() as $panel)
+      foreach(end($panels)->getPanels() as $panel)
       {
         if($panel->redraw())
         {
