@@ -22,4 +22,4 @@
   <? endforeach; ?>
   <li class="clear"></li>
 </ul>
-<input type="hidden" value="<?= (null===($value=$this->value()))?'null':$value; ?>" name="<?= $this->id; ?>" id="<?= $this->id; ?>"/>
+<input type="hidden" value="<?= (null===($value=$this->value()))?0:$value; ?>" name="<?= $this->id; ?>" id="<?= $this->id; ?>-value"/>

@@ -19,6 +19,7 @@ namespace Components;
     {
       parent::init();
 
+      $this->tag=null;
       $this->setTemplate(__DIR__.'/text.tpl');
     }
     //--------------------------------------------------------------------------

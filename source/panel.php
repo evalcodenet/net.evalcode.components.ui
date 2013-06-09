@@ -24,7 +24,10 @@ namespace Components;
     const ELEMENT_BLOCK='div';
     const ELEMENT_PREFORMATTED='pre';
     const ELEMENT_LIST='ul';
+    const ELEMENT_LIST_ITEM='li';
     const ELEMENT_DEFINITION_LIST='dl';
+    const ELEMENT_TABLE_CELL='td';
+    const ELEMENT_TABLE_ROW='tr';
     const ELEMENT_DEFAULT=self::ELEMENT_BLOCK;
 
     const MODE_VIEW=1;
@@ -45,6 +48,14 @@ namespace Components;
      * @var integer
      */
     public $mode=self::MODE_EDIT;
+    /**
+     * @var string
+     */
+    public $tag=self::ELEMENT_DEFAULT;
+    /**
+     * @var string
+     */
+    public $form;
     //--------------------------------------------------------------------------
 
 
@@ -52,7 +63,6 @@ namespace Components;
     public function __construct($name_, $value_=null, $title_=null)
     {
       $this->m_id=$name_;
-      $this->m_path=$name_;
       $this->m_name=$name_;
 
       $this->m_value=$value_;
@@ -67,11 +77,6 @@ namespace Components;
 
     // INITIALIZATION
     protected function init()
-    {
-      // Override ...
-    }
-
-    protected function afterInit()
     {
       // Override ...
     }
@@ -111,55 +116,9 @@ namespace Components;
       $this->initialize();
     }
 
-    public function getPath()
-    {
-      return $this->m_path;
-    }
-
     public function getPanels()
     {
       return $this->m_children;
-    }
-
-    /**
-     * @param string $panelId_
-     *
-     * @return Ui_Panel
-     */
-    public function getPanelForId($panelId_)
-    {
-      if(0===strpos($panelId_, $this->m_id))
-      {
-        if($this->m_id===$panelId_)
-          return $this;
-
-        $path=substr($panelId_, 0, strlen($this->m_id));
-
-        // in sub path
-        $panel=$this;
-        $names=explode('-', $panelId_);
-        while($next=array_shift($names))
-        {
-          if(isset($panel->m_children[$next]))
-            $panel=$panel->m_children[$next];
-        }
-
-        return $panel;
-      }
-
-      if(0===strpos($this->m_id, $panelId_))
-      {
-        // in parent path ..
-        $panel=$this;
-        while($panel=$panel->m_parent)
-        {
-          if($panelId_===$panel->m_id)
-            return $panel;
-        }
-      }
-
-      if(null!==$this->m_parent)
-        return $this->m_parent->getPanelForId($panelId_);
     }
 
     public function getId()
@@ -190,21 +149,6 @@ namespace Components;
     public function setTitle($title_)
     {
       $this->m_title=$title_;
-    }
-
-    public function getContainerId()
-    {
-      return $this->m_containerId;
-    }
-
-    public function getContainerTag()
-    {
-      return $this->m_containerTag;
-    }
-
-    public function setContainerTag($htmlTag_)
-    {
-      $this->m_containerTag=$htmlTag_;
     }
 
     public function getAttribute($name_)
@@ -256,34 +200,6 @@ namespace Components;
     public function setTemplate($template_)
     {
       $this->m_template=$template_;
-    }
-
-    public function isForm()
-    {
-      foreach($this->m_children as $panel)
-      {
-        if($panel->hasCallback())
-          return true;
-      }
-
-      return false;
-    }
-
-    public function isActiveForm()
-    {
-      if($this->isForm())
-      {
-        $panel=$this;
-        while($panel=$panel->m_parent)
-        {
-          if($panel->isForm())
-            return false;
-        }
-
-        return true;
-      }
-
-      return false;
     }
 
     public function hasCallback()
@@ -343,40 +259,27 @@ namespace Components;
       while($type=$type->getParentClass())
         $this->addClass(strtr(strtolower($type->getShortName()), '-', '_'));
 
-      if($this->isActiveForm())
-        $this->addClass('ui_panel_form');
-
-      if($this->m_hasContainer)
-        printf('<%2$s id="%1$s" %3$s>', $this->m_containerId, $this->m_containerTag, $this->getAttributesAsString());
-
-      if($this->isActiveForm())
+      if(null!==$this->form)
       {
+        $this->addClass("ui_panel_form_{$this->form}");
+
         $panel=$this;
-        $type=String::typeToPath(get_class($this));
-        $tree=array("{$this->m_name}:$type");
-
+        $path=array($this->m_name=>String::typeToPath(get_class($this)));
         while($panel=$panel->m_parent)
-        {
-          $type=String::typeToPath(get_class($panel));
-          $tree[]="{$panel->m_name}:{$type}";
-        }
+          $path[$panel->m_name]=String::typeToPath(get_class($panel));
 
-        $tree=array_reverse($tree);
-
-        printf(
-          '<input type="hidden" name="ui-panel-ie" value="1"/>%2$s'.
-          '<input type="hidden" name="ui-panel-path" value="%1$s"/>%2$s',
-            implode(',', $tree),
-            "\n"
-        );
+        self::$m_forms[$this->form]=array_reverse($path);
       }
+
+      if(null!==$this->tag)
+        printf('<%2$s id="%1$s" %3$s>', $this->m_id, $this->tag, $this->getAttributesAsString());
 
       $engine=new Ui_Template();
       $this->initTemplateEngine($engine);
 
       echo $engine->render($this->getTemplate());
 
-      if(count($this->m_scripts) || count($this->m_stylesheets))
+      if(null===$this->m_parent || count($this->m_scripts) || count($this->m_stylesheets))
       {
         echo '<script type="text/javascript">';
 
@@ -391,11 +294,17 @@ namespace Components;
         foreach($this->m_stylesheets as $name=>$media)
           printf('ui_panel_stylesheet_add("%1$s", true, "%2$s", %3$s);', $name, $media, Runtime::getTimestampLastUpdate());
 
+        if(null===$this->m_parent)
+        {
+          foreach(self::$m_forms as $name=>$path)
+            printf('ui_panel_forms.push(%s);', json_encode(array("ui_panel_form_$name"=>json_encode($path))));
+        }
+
         echo '</script>';
       }
 
-      if($this->m_hasContainer)
-        printf('</%1$s>', $this->m_containerTag);
+      if(null!==$this->tag)
+        printf('</%1$s>', $this->tag);
     }
 
     public function render()
@@ -508,8 +417,8 @@ namespace Components;
 
     // IMPLEMENTATION
     private static $m_submittedPanelId;
+    private static $m_forms=array();
 
-    private $m_path=array();
     private $m_attributes=array();
     private $m_children=array();
     private $m_errors=array();
@@ -520,8 +429,8 @@ namespace Components;
     private $m_classes=array();
 
     /**
-     * @var Ui_Panel
-     */
+     * @var \Components\Ui_Panel
+    */
     private $m_parent;
     private $m_id;
     private $m_name;
@@ -530,20 +439,9 @@ namespace Components;
     private $m_template;
     private $m_callback;
     private $m_callbackJs;
-    private $m_hasContainer=true;
-    private $m_containerId=true;
-    private $m_containerTag=self::ELEMENT_DEFAULT;
     private $m_redraw=false;
     //-----
 
-
-    protected function hasContainer($toggle_=null)
-    {
-      if(null===$toggle_)
-        return $this->m_hasContainer;
-
-      return $this->m_hasContainer=$toggle_?true:false;
-    }
 
     protected function hasRequestParam($name_)
     {
@@ -631,10 +529,14 @@ namespace Components;
     {
       $params=$this->scriptlet->request->getParams();
 
+      $value=null;
       if($params->containsKey($this->m_id))
-      {
         $value=$params->get($this->m_id);
+      else if($params->containsKey($this->m_id.'-value'))
+        $value=$params->get($this->m_id.'-value');
 
+      if(null!==$value)
+      {
         if('null'===$value)
           $this->m_value=null;
         else
@@ -646,15 +548,11 @@ namespace Components;
     private function initialize()
     {
       $this->m_id=$this->m_parent->m_id.'-'.$this->m_name;
-      $this->m_path=$this->m_parent->m_path.'-'.$this->m_name;
-      $this->m_containerId="{$this->m_id}-container";
-
       $this->session=Ui_Panel_Session::forNamespace($this->m_id);
 
       $this->onRetrieveValue();
 
       $this->init();
-      $this->afterInit();
 
       if(null!==$this->m_callback && self::$m_submittedPanelId===$this->m_id)
         call_user_func_array($this->m_callback, array($this));
@@ -752,17 +650,17 @@ namespace Components;
       if(1>($count=$this->countErrors($includeSubPanels_)))
         return;
 
+      // TODO Localize ...
       printf('
         <div class="ui_panel_errors">
           <div class=" ui_panel_disclosure_header">
             <h2 class="title">%2$s (%3$s)</h2>
             <a href="javascript:void(0);" rel="%1$s-errors" class="ui_panel_disclosure_toggle%4$s">collapse</a>
           </div>',
-          $this->m_id,
-          // TODO Localize ...
-          String::escapeHtml(I18n::translate('ui/panel/errors/title')),
-          $count,
-          $count>$expandThreshold_?'':' expanded'
+            $this->m_id,
+            String::escapeHtml(I18n::translate('ui/panel/errors/title')),
+            $count,
+            $count>$expandThreshold_?'':' expanded'
       );
 
       printf('<ul id="%1$s-errors" class="ui_panel_errors">', $this->m_id);

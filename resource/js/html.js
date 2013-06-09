@@ -1,9 +1,5 @@
 
 
-  // PROPERTIES
-  var UI_PANEL_HTML_LISTENER=new Array();
-
-
   // IMPLEMENTATION
   function ui_panel_html_init(panelIdHtml_)
   {
@@ -30,7 +26,7 @@
       theme_advanced_buttons1: "fontselect,fontsizeselect,bold,italic,underline,strikethrough,separator,forecolor,backcolor,separator,justifyleft,justifycenter,justifyright,justifyfull,separator,redo,undo,separator,visualaid,search,help",
       theme_advanced_buttons2: "formatselect,styleprops,bullist,numlist,separator,indent,outdent,separator,table,tablecontrols,row_props,cell_props,separator,removeformat,code",
       theme_advanced_buttons3: "image,separator,link,unlink,anchor,separator,sub,sup,cite,abbr,acronym,separator,insertdate,inserttime,charmap,emotions,hr",
-      theme_advanced_blockformats: "p,h1,h2,h3,h4,h5,h6,pre,dt,dd",
+      theme_advanced_blockformats: "h1,h2,h3,h4,h5,h6,p,pre,dt,dd",
       theme_advanced_resizing: true,
       theme_advanced_resizing_use_cookie: true,
 
@@ -65,4 +61,9 @@
       forced_root_block: "",
       relative_urls: false
     });
+  }
+
+  function ui_panel_html_value(panelIdHtml_)
+  {
+    return tinyMCE.get(panelIdHtml_).getContent();
   }

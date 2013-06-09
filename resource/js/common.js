@@ -33,43 +33,42 @@
     error(exception_.type, exception_.message);
   }
 
-  function ui_panel_values(parent_)
+  function ui_panel_form_name(anyFormElement_)
   {
-    var values=new Array();
+    var submittedForm=null;
 
-    for(var idx in parent_.childNodes)
+    if("string"==typeof(anyFormElement_))
+      submittedForm=jQuery(anyFormElement_+"[class*=ui_panel_form]");
+    else if(-1<jQuery(anyFormElement_).attr("class").indexOf("ui_panel_form"))
+      submittedForm=jQuery(anyFormElement_);
+
+    if(null==submittedForm || 1>submittedForm.length)
+      submittedForm=jQuery(anyFormElement_).parents("[class*=ui_panel_form]");
+
+    if(null==submittedForm || 1>submittedForm.length)
+      return "ui_panel_root";
+
+    var submittedFormName=jQuery(submittedForm).attr("class");
+    var submittedFormNameIdx=0;
+
+    if(-1<(submittedFormNameIdx=submittedFormName.indexOf("ui_panel_form_")))
     {
-      if(parent_.childNodes[idx].childNodes && 0<parent_.childNodes[idx].childNodes.length)
-        values=values.concat(ui_panel_values(parent_.childNodes[idx]));
-
-      if(parent_.childNodes[idx].name && parent_.childNodes[idx].tagName)
-      {
-        var tagName=parent_.childNodes[idx].tagName.toLowerCase();
-
-        if("input"==tagName || "select"==tagName || "textarea"==tagName)
-        {
-          if(parent_.childNodes[idx].type && "checkbox"==parent_.childNodes[idx].type.toLowerCase())
-          {
-            if(parent_.childNodes[idx].checked)
-            {
-              values.push({
-                "name": parent_.childNodes[idx].name,
-                "value": parent_.childNodes[idx].value
-              });
-            }
-          }
-          else
-          {
-            values.push({
-              "name": parent_.childNodes[idx].name,
-              "value": parent_.childNodes[idx].value
-            });
-          }
-        }
-      }
+      submittedFormName=submittedFormName.substring(submittedFormNameIdx);
+      if(-1<submittedFormName.indexOf(" "))
+        submittedFormName=submittedFormName.substring(0, submittedFormName.indexOf(" "));
     }
 
-    return values;
+    return submittedFormName;
+  }
+
+  function ui_panel_form_elements(formName_)
+  {
+    return jQuery("[class~="+formName_+"] :input[type!=file]").not("[class*=ui_panel_form][class!="+formName_+"]");
+  }
+
+  function ui_panel_form_elements_file(formName_)
+  {
+    return jQuery("[class~="+formName_+"] :file").not("[class*=ui_panel_form][class!="+formName_+"]");
   }
 
   function ui_panel_submit(panelIdSubmitted_, callback_, params_, trigger_, panelUploadedId_)
@@ -81,39 +80,21 @@
     else
       log("ui/panel/common", "Initiating submission of ui/panel [panel: "+panelIdSubmitted_+"].");
 
-    if(document.getElementById(panelIdSubmitted_))
-      var submitted=jQuery("#"+panelIdSubmitted_);
-    else
-      var submitted=jQuery("#"+panelIdSubmitted_+"-container");
-
-    var forms=submitted.parents(".ui_panel_form");
-    var form=null;
-
-    if(0<forms.length)
-    {
-      form=forms[0];
-    }
-    else
-    {
-      log("ui/panel/common", "Unable to resolve enclosing form for submitted panel [submitted: "+panelIdSubmitted_+"].");
-
-      profile_end();
-
-      return;
-    }
+    var submittedPanel=jQuery("#"+panelIdSubmitted_);
+    var submittedFormName=ui_panel_form_name(submittedPanel);
 
     if(!panelUploadedId_)
     {
-      var panelsUploadFile=jQuery("#"+form.id+" .ui_panel_upload_file input[type=file]");
+      var submittedFormElementsFile=ui_panel_form_elements_file(submittedFormName);
 
-      if(panelsUploadFile && 0<panelsUploadFile.length)
+      if(0<submittedFormElementsFile.length)
       {
         assert("ui/panel/common", "Missing referenced script [name: ui/upload/file].", "function"==typeof(ui_panel_upload_submit));
 
-        for(var i=0; i<panelsUploadFile.length; i++)
+        for(var i=0; i<submittedFormElementsFile.length; i++)
         {
-          if(0<panelsUploadFile[i].files.length)
-            ui_panel_upload.unshift(panelsUploadFile[i]);
+          if(0<submittedFormElementsFile[i].files.length)
+            ui_panel_upload.unshift(submittedFormElementsFile[i]);
         }
       }
     }
@@ -134,16 +115,14 @@
       return;
     }
 
-    var parameters=ui_panel_values(form);
+    var submittedFormElements=ui_panel_form_elements(submittedFormName);
+    var parameters=submittedFormElements.serializeArray();
 
-    var formId=form.id;
-    formId=formId.replace(/-container/ig, "");
-
-    if(ui_panel_transfer_sid)
-      parameters.push({"name": "ui-panel-sid", "value": ui_panel_transfer_sid});
-
+    parameters.push({"name": "ui-panel-form", "value": ui_panel_forms[0][submittedFormName]});
     parameters.push({"name": "ui-panel-submitted", "value": panelIdSubmitted_});
 
+    if("undefined"!=typeof(ui_panel_transfer_sid))
+      parameters.push({"name": "ui-panel-sid", "value": ui_panel_transfer_sid});
     if(callback_)
       parameters.push({"name": "ui-panel-callback", "value": callback_[0]+"::"+callback_[1]});
 
@@ -176,14 +155,14 @@
       }
     }
 
-    log("ui/panel/common", "Submitting ui/panel [panel: "+panelIdSubmitted_+", form: "+formId+"].", parameters);
+    log("ui/panel/common", "Submitting ui/panel [panel: "+panelIdSubmitted_+", form: "+submittedFormName+"].", parameters);
 
     var response=jQuery.ajax({
       data: parameters
     }).always(
       function()
       {
-        log("ui/panel/common", "Received response for ui/panel submission [panel: "+panelIdSubmitted_+", form: "+formId+"].", response);
+        log("ui/panel/common", "Received response for ui/panel submission [panel: "+panelIdSubmitted_+", form: "+submittedFormName+"].", response);
 
         ui_panel_dump_debug(response);
 
@@ -232,7 +211,7 @@
 
     var parameters=new Array();
 
-    if(ui_panel_transfer_sid)
+    if("undefined"!=typeof(ui_panel_transfer_sid))
       parameters.push({"name": "ui-panel-sid", "value": ui_panel_transfer_sid});
 
     parameters.push({"name": "ui-panel-submitted", "value": panelIdSubmitable_});
@@ -294,7 +273,7 @@
 
     var parameters=new Array();
 
-    if(ui_panel_transfer_sid)
+    if("undefined"!=typeof(ui_panel_transfer_sid))
       parameters.push({"name": "ui-panel-sid", "value": ui_panel_transfer_sid});
 
     if("undefined"!=typeof(params_))

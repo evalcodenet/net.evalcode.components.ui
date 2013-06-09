@@ -29,8 +29,7 @@ namespace Components;
     {
       parent::init();
 
-      $this->hasContainer(false);
-
+      $this->tag=null;
       $this->setTemplate(__DIR__.'/select.tpl');
 
       $this->params->options=$this->m_options;

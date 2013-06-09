@@ -30,20 +30,20 @@
         return;
     }
 
-    jQuery("#"+panelIdTabs_+"-container .ui_panel_tab_content").hide();
+    jQuery("#"+panelIdTabs_+" .ui_panel_tab_content").hide();
 
-    jQuery("#"+panelIdTabs_+"-container .ui_panel_tab_label").removeClass("active");
+    jQuery("#"+panelIdTabs_+" .ui_panel_tab_label").removeClass("active");
     jQuery("#"+panelIdTabs_+"-label-"+idxTab_).addClass("active");
 
     jQuery("#"+panelIdTabs_+"-content-"+idxTab_).show();
 
-    document.getElementById(panelIdTabs_).value=idxTab_;
+    document.getElementById(panelIdTabs_+"-value").value=idxTab_;
 
     return;
   }
 
   function ui_panel_tabs_init(panelIdTabs_)
   {
-    jQuery("#"+panelIdTabs_+"-container .ui_panel_tab_content").hide();
-    jQuery("#"+panelIdTabs_+"-container .ui_panel_tab_content.active").show();
+    jQuery("#"+panelIdTabs_+" .ui_panel_tab_content").hide();
+    jQuery("#"+panelIdTabs_+" .ui_panel_tab_content.active").show();
   }

@@ -47,7 +47,7 @@ namespace Components;
     {
       parent::init();
 
-      $this->hasContainer(false);
+      $this->tag=null;
 
       $this->setTemplate(__DIR__.'/input.tpl');
     }

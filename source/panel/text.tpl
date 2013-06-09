@@ -1,1 +1,1 @@
-<textarea id="<?= $this->id; ?>" name="<?= $this->id; ?>"><?= $this->value(); ?></textarea>
+<textarea id="<?= $this->id; ?>" name="<?= $this->id; ?>" <?= $this->attributes(); ?>><?= $this->value(); ?></textarea>

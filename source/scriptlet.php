@@ -15,9 +15,8 @@ namespace Components;
   class Ui_Scriptlet extends Http_Scriptlet
   {
     // PROPERTIES
-    public static $embedded=false;
-    public static $transferSessionId=false;
-
+    public static $embedded;
+    public static $transferSessionId;
     public $title;
     //--------------------------------------------------------------------------
 
@@ -55,7 +54,7 @@ namespace Components;
           $exception->log();
           $exception->sendHeader();
 
-          $response->setException(null);
+          $response->unsetException();
 
           if(Debug::active() && Runtime::isManagementAccess())
             $parameters['exception']=$exception->toJson();
@@ -89,10 +88,11 @@ namespace Components;
       );
 
       // TODO Store & verify possibly correct session ids per useragent+host to prevent stealing ..
-      if(self::$transferSessionId && $params->containsKey('ui-panel-sid'))
+      if($params->containsKey('ui-panel-sid'))
+      {
         session_id($params->get('ui-panel-sid'));
-
-      session_start();
+        session_start();
+      }
 
       if($params->containsKey('ui-panel-callback'))
       {
@@ -109,41 +109,37 @@ namespace Components;
         }
       }
 
-      if(false===$params->containsKey('ui-panel-path') || !($path=$params->get('ui-panel-path')))
+      if(false===$params->containsKey('ui-panel-form') || !($form=$params->get('ui-panel-form')))
         throw Http_Exception::notFound('ui/scriptlet');
+
+      if(false===Ui_Scriptlet::$embedded)
+        session_start();
 
       $redraw=null;
       $panels=array();
-      $submittedPanel=null;
 
-      $types=array();
-      foreach(explode(',', $path) as $type)
-        $types[substr($type, 0, strpos($type, ':'))]=substr($type, strpos($type, ':')+1);
+      $form=json_decode($form);
 
-      $names=array_keys($types);
-      for($i=0, $count=count($names); $i<$count; $i++)
+      $i=0;
+      foreach($form as $name=>$type)
       {
-        $type=String::pathToType($types[$names[$i]]);
+        $type=String::pathToType($type);
 
-        $panels[$i]=new $type($names[$i]);
+        $panels[$i]=new $type($name);
         if($panels[$i] instanceof Ui_Panel_Root)
           $panels[$i]->scriptlet=$this;
-        else if(false===isset($panels[$i-1]->{$names[$i]}))
+        else if(false===isset($panels[$i-1]->$name))
           $panels[$i-1]->add($panels[$i]);
-
-        if($submittedPanelId===$panels[$i]->getId())
-          $submittedPanel=$panels[$i];
 
         if(null===$redraw && $panels[$i]->redraw())
           $redraw=$panels[$i];
-      }
 
-      if(null===$submittedPanel)
-        $submittedPanel=$panels[count($panels)-1]->getPanelForId($submittedPanelId);
+        $i++;
+      }
 
       if(null!==$redraw)
       {
-        $this->response->addParameter('redraw', $redraw->getContainerId());
+        $this->response->addParameter('redraw', $redraw->getId());
 
         return $redraw->render();
       }
@@ -153,7 +149,7 @@ namespace Components;
       {
         if($panel->redraw())
         {
-          $this->response->addParameter('redraw', $panel->getContainerId());
+          $this->response->addParameter('redraw', $panel->getId());
 
           return $panel->render();
         }

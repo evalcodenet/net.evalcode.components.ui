@@ -28,6 +28,6 @@
       </ul>
     <? endif; ?>
     <div id="<?= $this->id; ?>-progress" class="ui_panel_upload_file_progress"><div><div>&nbsp;</div></div></div>
-    <input type="file" id="<?= $this->id; ?>" name="<?= $this->id; ?>" class="ui_panel_upload_file_chooser"<? if($this->hasCallbackJs()): ?> onchange="<?= $this->callbackJs(); ?>"<? elseif($this->hasCallbackAjax()): ?> onchange="<?= $this->callbackAjax(); ?>"<? endif; ?>/>
+    <input type="file" id="<?= $this->id; ?>-value" name="<?= $this->id; ?>" class="ui_panel_upload_file_chooser"<? if($this->hasCallbackJs()): ?> onchange="<?= $this->callbackJs(); ?>"<? elseif($this->hasCallbackAjax()): ?> onchange="<?= $this->callbackAjax(); ?>"<? endif; ?>/>
   </div>
 </div>

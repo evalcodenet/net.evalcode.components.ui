@@ -2,18 +2,21 @@
 <script type="text/javascript">
   if("undefined"==typeof(ui_panel_root_id))
   {
+    <? if(Ui_Scriptlet::$transferSessionId): ?>
+      var ui_panel_transfer_sid="<?= session_id(); ?>";
+    <? endif; ?>
     <? if(Ui_Scriptlet::$embedded): ?>
       var ui_panel_route="<?= Environment::uriComponentsEmbedded('ui'); ?>";
     <? else: ?>
       var ui_panel_route="<?= Environment::uriComponents('ui'); ?>";
     <? endif; ?>
     var ui_panel_debug=<? if(Debug::active()): ?>true<? else: ?>false<? endif; ?>;
-    var ui_panel_scripts=[];
-    var ui_panel_stylesheets=[];
-    var ui_panel_transfer_sid=<? if(Ui_Scriptlet::$transferSessionId): ?>"<?= session_id(); ?>"<? else: ?>false<? endif; ?>;
+    var ui_panel_forms=new Array();
+    var ui_panel_scripts=new Array();
+    var ui_panel_stylesheets=new Array();
     var ui_panel_root_id="<?= $this->id(); ?>";
 
-    var ui_panel_resource_callbacks=[];
+    var ui_panel_resource_callbacks=new Array();
     var ui_panel_resource_callbacks_pending=new Array();
 
 
@@ -63,17 +66,17 @@
         var log=function(namespace_, message_, arg_)
         {
           if("undefined"==typeof(arg_))
-            arg_="";
-
-          console.log("["+namespace_+"] "+message_, arg_);
+            console.log("["+namespace_+"] "+message_);
+          else
+            console.log("["+namespace_+"] "+message_, arg_);
         }
 
         var debug=function(namespace_, message_, arg_)
         {
           if("undefined"==typeof(arg_))
-            arg_="";
-
-          console.warn("["+namespace_+"] "+message_, arg_);
+            console.warn("["+namespace_+"] "+message_);
+          else
+            console.warn("["+namespace_+"] "+message_, arg_);
         }
 
         var profile_begin=function()
@@ -100,9 +103,9 @@
       var error=function(namespace_, message_, exception_)
       {
         if("undefined"==typeof(exception_))
-          exception_="";
-
-        console.error("["+namespace_+"] "+message_, exception_);
+          console.error("["+namespace_+"] "+message_);
+        else
+          console.error("["+namespace_+"] "+message_, exception_);
       }
     }
 
@@ -152,9 +155,14 @@
 
       elementsHead[0].appendChild(elementLink);
     }
+
+    ui_panel_form_add=function(name_, path_)
+    {
+      ui_panel_forms.push(path_);
+    }
   }
 </script>
-<div id="<?= $this->id; ?>">
+<div id="<?= $this->id; ?>" <?= $this->attributes(); ?>>
   <? foreach($this->panels as $panel): ?>
     <? $panel->display(); ?>
   <? endforeach; ?>

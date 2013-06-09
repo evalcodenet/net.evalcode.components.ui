@@ -11,13 +11,14 @@
   function ui_panel_upload_submit(panelUpload_, callback_)
   {
     var panelIdUpload=panelUpload_.id;
+    panelIdUpload=panelIdUpload.substring(0, panelIdUpload.length-6);
 
     var panelUpload=jQuery(panelUpload_);
     var panelUploadParent=panelUpload.parent();
     var panelUploadProgress=jQuery("#"+panelIdUpload+"-progress");
     var panelUploadProgressInner=panelUploadProgress.children("div");
     var panelUploadProgressLabel=panelUploadProgressInner.children("div");
-
+    
     var fileName=panelUpload.context.files[0].name;
 
     var container=document.createElement("div");

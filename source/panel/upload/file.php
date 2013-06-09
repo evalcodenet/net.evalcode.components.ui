@@ -360,6 +360,7 @@ namespace Components;
 
 
     // STATTC AJAX CALLBACKS
+    // TODO (CSH) Integrate io#fileUploadAll
     /*private*/ static function upload()
     {
       $uploadSessionId=$_REQUEST[Ui_Panel::getSubmittedPanelId().'-key'];

@@ -27,7 +27,7 @@ namespace Components;
     {
       parent::__construct($name_, null, null);
 
-      $this->hasContainer(false);
+      $this->tag=null;
 
       $this->setTemplate(__DIR__.'/root.tpl');
 

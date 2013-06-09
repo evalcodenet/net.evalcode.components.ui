@@ -26,8 +26,6 @@ namespace Components;
     {
       parent::init();
 
-      $this->hasContainer(false);
-
       $this->setTemplate(__DIR__.'/button.tpl');
 
       $this->setAttribute('type', self::TYPE_PLAIN);
