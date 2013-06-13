@@ -63,8 +63,8 @@ namespace Components;
    *
    * @author evalcode.net
    *
-   * @method Ui_Panel_Input_Type HIDDEN
-   * @method Ui_Panel_Input_Type TEXT
+   * @method \Components\Ui_Panel_Input_Type HIDDEN
+   * @method \Components\Ui_Panel_Input_Type TEXT
    */
   class Ui_Panel_Input_Type extends Enumeration
   {

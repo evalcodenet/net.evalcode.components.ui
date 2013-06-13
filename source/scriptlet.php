@@ -88,7 +88,7 @@ namespace Components;
       );
 
       // TODO Store & verify possibly correct session ids per useragent+host to prevent stealing ..
-      if($params->containsKey('ui-panel-sid'))
+      if(!session_id() && $params->containsKey('ui-panel-sid'))
         session_id($params->get('ui-panel-sid'));
 
       if($params->containsKey('ui-panel-callback'))
@@ -109,7 +109,8 @@ namespace Components;
       if(false===$params->containsKey('ui-panel-form') || !($form=$params->get('ui-panel-form')))
         throw Http_Exception::notFound('ui/scriptlet');
 
-      session_start();
+      if(false===isset($_SESSION))
+        session_start();
 
       $redraw=null;
       $panels=array();
@@ -137,7 +138,7 @@ namespace Components;
       {
         $this->response->addParameter('redraw', $redraw->getId());
 
-        return $redraw->render();
+        return $redraw->fetch();
       }
 
       // FIXME (CSH) If we allow callbacks to selectivly redraw sub-panels, we need to support multiple redraw panels.
@@ -147,7 +148,7 @@ namespace Components;
         {
           $this->response->addParameter('redraw', $panel->getId());
 
-          return $panel->render();
+          return $panel->fetch();
         }
       }
     }

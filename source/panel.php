@@ -164,11 +164,13 @@ namespace Components;
       $this->m_attributes[$name_]=$value_;
     }
 
+    // TODO (CSH( Use components/type/hashmap or similar and its __toString().
     public function getAttributesAsString()
     {
-      $attributes=array(
-        'class="'.String::escapeHtml(implode(' ', $this->m_classes)).'"'
-      );
+      $attributes=array();
+
+      if(count($this->m_classes))
+        $attributes[]='class="'.String::escapeHtml(implode(' ', $this->m_classes)).'"';
 
       foreach($this->m_attributes as $key=>$value)
       {
@@ -177,6 +179,9 @@ namespace Components;
         else
           array_push($attributes, "$key=\"".String::escapeHtml($value).'"');
       }
+
+      if(0===count($attributes))
+        return '';
 
       return implode(' ', $attributes);
     }
@@ -251,20 +256,25 @@ namespace Components;
       $this->m_triggerJs[$type]=array('method'=>$method, 'args'=>$args);
     }
 
+    public function fetch()
+    {
+      ob_start();
+      $this->display();
+
+      return ob_get_clean();
+    }
+
     public function display()
     {
-      $type=new \ReflectionObject($this);
-
-      $this->addClass(strtr(strtolower($type->getShortName()), '-', '_'));
-      while($type=$type->getParentClass())
-        $this->addClass(strtr(strtolower($type->getShortName()), '-', '_'));
-
       if(null!==$this->form)
       {
         $this->addClass("ui_panel_form_{$this->form}");
 
+        $path=array(
+          $this->m_name=>String::typeToPath(get_class($this))
+        );
+
         $panel=$this;
-        $path=array($this->m_name=>String::typeToPath(get_class($this)));
         while($panel=$panel->m_parent)
           $path[$panel->m_name]=String::typeToPath(get_class($panel));
 
@@ -274,11 +284,9 @@ namespace Components;
       if(null!==$this->tag)
         printf('<%2$s id="%1$s" %3$s>', $this->m_id, $this->tag, $this->getAttributesAsString());
 
-      $engine=new Ui_Template();
-      $this->initTemplateEngine($engine);
+      echo $this->render();
 
-      echo $engine->render($this->getTemplate());
-
+      // TODO (CSH) Manage external resources centralized, e.g. in ui/scriptlet.
       if(null===$this->m_parent || count($this->m_scripts) || count($this->m_stylesheets))
       {
         echo '<script type="text/javascript">';
@@ -309,10 +317,10 @@ namespace Components;
 
     public function render()
     {
-      ob_start();
-      $this->display();
+      $engine=new Ui_Template();
+      $this->initTemplateEngine($engine);
 
-      return ob_get_clean();
+      return $engine->render($this->getTemplate());
     }
 
     public function redraw($redraw_=null)
@@ -549,6 +557,11 @@ namespace Components;
     {
       $this->m_id=$this->m_parent->m_id.'-'.$this->m_name;
       $this->session=Ui_Panel_Session::forNamespace($this->m_id);
+
+      $type=new \ReflectionObject($this);
+      $this->addClass(strtolower($type->getShortName()));
+      while($type=$type->getParentClass())
+        $this->addClass(strtolower($type->getShortName()));
 
       $this->onRetrieveValue();
 
