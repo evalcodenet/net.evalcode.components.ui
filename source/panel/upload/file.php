@@ -55,11 +55,6 @@ namespace Components;
     {
       $this->m_fileActionsJs[$actionName_]=array('title'=>$actionTitle_, 'callback'=>$applyActionCallback_);
     }
-
-    public function getUploadSessionId()
-    {
-      return $this->key->getValue();
-    }
     //--------------------------------------------------------------------------
 
 
@@ -74,8 +69,6 @@ namespace Components;
       $this->addScript('ui/upload/file');
 
       $this->setTemplate(__DIR__.'/file.tpl');
-
-      $this->add(Ui_Panel_Input_Type::HIDDEN()->create('key', md5(uniqid(null, true))));
     }
     //--------------------------------------------------------------------------
 
@@ -100,16 +93,12 @@ namespace Components;
     {
       parent::onRetrieveValue();
 
-      if(false===$this->hasRequestParam('key'))
-        return;
-
-      $uploadSessionId=$this->getRequestParam('key');
-      $uploadPathTmp=self::getTemporaryUploadPath($uploadSessionId);
+      $uploadPathTmp=self::getTemporaryUploadPath();
 
       if($uploadPathTmp->isDirectory())
         $this->scanTemporaryUploadPath($uploadPathTmp);
 
-      $uploadPath=self::getUploadPath($uploadSessionId);
+      $uploadPath=self::getUploadPath();
 
       $this->m_files=array();
       $this->scanUploadPath($uploadPath, '', $this->m_files);
@@ -189,7 +178,7 @@ namespace Components;
 
         $archiveId=md5($file_->getPathAsString());
         $archiveImpl=self::$implArchives[$mimeType->name()];
-        $archivePath=self::getUploadPath($this->getRequestParam('key'), $archiveId);
+        $archivePath=self::getUploadPath($archiveId);
 
         // TODO Io_File_Archive, Io_File_Archive_Zip ...
         $archive=new $archiveImpl();
@@ -204,7 +193,7 @@ namespace Components;
         return;
       }
 
-      $file=$file_->move(self::getUploadPath($this->getRequestParam('key'), $subPath_)->getFile($file_->getName()));
+      $file=$file_->move(self::getUploadPath($subPath_)->getFile($file_->getName()));
       $this->m_files[$subPath_.$file->getName()]=$file;
     }
 
@@ -294,13 +283,11 @@ namespace Components;
 
     // HELPERS
     /**
-     * @param string $uploadSessionId_
-     *
      * @return Io_Path
      */
-    private static function getTemporaryUploadPath($uploadSessionId_)
+    private static function getTemporaryUploadPath()
     {
-      $path=Io::tmpPath("$uploadSessionId_/upload", true);
+      $path=Io::tmpPath('upload', false);
 
       if(false===$path->exists())
         $path->create();
@@ -309,68 +296,62 @@ namespace Components;
     }
 
     /**
-     * @param string $uploadSessionId_
      * @param string $directory_
      * @param boolean $create_
      *
      * @return Io_Path
      */
-    private static function getUploadPath($uploadSessionId_, $directory_=null, $create_=true)
+    private static function getUploadPath($directory_=null, $create_=true)
     {
-      if(null===$directory_)
-        $path=Io::tmpPath($uploadSessionId_, true);
-      else
-        $path=Io::tmpPath("$uploadSessionId_/$directory_", true);
+      $path=Io::tmpPath($directory_, false);
 
-      if($create_)
+      if($create_ && false===$path->exists())
         $path->create();
 
       return $path;
     }
 
     /**
-     * @param string $uploadSessionId_
      * @param string $filename_
      *
      * @return Io_File
      */
-    private static function getUploadedFile($uploadSessionId_, $filename_)
+    private static function getUploadedFile($filename_)
     {
       $segments=explode('/', $filename_);
       $filename=array_pop($segments);
       $directory=implode('/', $segments);
 
-      return self::getUploadPath($uploadSessionId_, $directory)->getFile($filename);
+      return self::getUploadPath($directory)->getFile($filename);
     }
 
     /**
-     * @param string $uploadSessionId_
-     *
      * @return boolean
      */
-    private static function removeUploadPath($uploadSessionId_, $directory_=null)
+    private static function removeUploadPath($directory_=null)
     {
-      $path=self::getUploadPath($uploadSessionId_, $directory_);
-
-      if($path->exists())
-        return $path->delete(true);
+      if($path=self::getUploadPath($directory_))
+        return $path->clear();
 
       return true;
     }
 
 
     // STATTC AJAX CALLBACKS
-    // TODO (CSH) Integrate io#fileUploadAll
     /*private*/ static function upload()
     {
-      $uploadSessionId=$_REQUEST[Ui_Panel::getSubmittedPanelId().'-key'];
-
       $failed=array();
-      foreach($_FILES as $file)
+      foreach($_FILES as $key=>$file)
       {
-        $target=self::getTemporaryUploadPath($uploadSessionId)->getFile($file['name']);
-        if(false===move_uploaded_file($file['tmp_name'], $target->getPathAsString()))
+        try
+        {
+          Io::fileUpload($key, self::getTemporaryUploadPath());
+        }
+        catch(Io_Exception $e)
+        {
+          // FIXME Use exception message.
           $failed[$file['name']]=$file['error'];
+        }
       }
 
       return $failed;
@@ -381,9 +362,9 @@ namespace Components;
       return apc_fetch('upload_'.$_REQUEST[Ui_Panel::getSubmittedPanelId().'-file']);
     }
 
-    /*private*/ static function cleanup($uploadSessionId_)
+    /*private*/ static function cleanup()
     {
-      return self::removeUploadPath($uploadSessionId_);
+      return self::removeUploadPath();
     }
     //--------------------------------------------------------------------------
   }
