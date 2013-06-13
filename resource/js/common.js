@@ -73,8 +73,6 @@
 
   function ui_panel_submit(panelIdSubmitted_, callback_, params_, trigger_, panelUploadedId_)
   {
-    profile_begin();
-
     if(panelUploadedId_)
       log("ui/panel/common", "Continuing submission of ui/panel [panel: "+panelIdSubmitted_+"].");
     else
@@ -109,8 +107,6 @@
       ui_panel_upload_submit(nextPanelUpload, function() {
         ui_panel_submit(panelIdSubmitted_, callback_, params_, trigger_, nextPanelUploadId);
       });
-
-      profile_end();
 
       return;
     }
@@ -148,8 +144,6 @@
       if(false==eval(triggerMethod+"(request, parameters, triggerArgs);"))
       {
         log("ui/panel/common", "Submission of ui/panel canceled by trigger [panel: "+panelIdSubmitted_+", trigger: "+triggerMethod+"].");
-
-        profile_end();
 
         return;
       }
@@ -197,16 +191,12 @@
 
           eval(triggerMethod+"(response, triggerArgs);");
         }
-
-        profile_end();
       }
     );
   }
 
   function ui_panel_submit_static(panelIdSubmitable_, callbackType_, callbackMethod_, params_, callbackJsResponse_)
   {
-    profile_begin();
-
     log("ui/panel/common", "Submitting static ui/panel callback [panel: "+panelIdSubmitable_+"].", params_);
 
     var parameters=new Array();
@@ -259,16 +249,12 @@
         {
           callbackJsResponse_(responseText);
         }
-
-        profile_end();
       }
     );
   }
 
   function ui_panel_request(uri_, params_, callbackJsResponse_)
   {
-    profile_begin();
-
     log("ui/panel/common", "Initiating ui/panel request [uri: "+uri_+"].", params_);
 
     var parameters=new Array();
@@ -295,8 +281,6 @@
   
         ui_panel_dump_debug(response);
         callbackJsResponse_(response);
-
-        profile_end();
       }
     );
   }

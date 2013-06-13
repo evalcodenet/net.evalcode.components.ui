@@ -89,10 +89,7 @@ namespace Components;
 
       // TODO Store & verify possibly correct session ids per useragent+host to prevent stealing ..
       if($params->containsKey('ui-panel-sid'))
-      {
         session_id($params->get('ui-panel-sid'));
-        session_start();
-      }
 
       if($params->containsKey('ui-panel-callback'))
       {
@@ -112,8 +109,7 @@ namespace Components;
       if(false===$params->containsKey('ui-panel-form') || !($form=$params->get('ui-panel-form')))
         throw Http_Exception::notFound('ui/scriptlet');
 
-      if(false===Ui_Scriptlet::$embedded)
-        session_start();
+      session_start();
 
       $redraw=null;
       $panels=array();
