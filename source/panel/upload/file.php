@@ -180,7 +180,7 @@ namespace Components;
         $archiveImpl=self::$implArchives[$mimeType->name()];
         $archivePath=self::getUploadPath($archiveId);
 
-        // TODO Io_File_Archive, Io_File_Archive_Zip ...
+        // TODO Io_Archive_Zip
         $archive=new $archiveImpl();
         $archive->open($file_->getPathAsString());
         $archive->extractTo($archivePath);
