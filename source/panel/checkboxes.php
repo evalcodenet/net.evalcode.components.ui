@@ -25,6 +25,10 @@ namespace Components;
 
 
     // INITIALIZATION
+    /**
+     * (non-PHPdoc)
+     * @see \Components\Ui_Panel::init()
+     */
     protected function init()
     {
       parent::init();
@@ -37,18 +41,42 @@ namespace Components;
 
 
     // OVERRIDES/IMPLEMENTS
+    /**
+     * (non-PHPdoc)
+     * @see \Components\Ui_Panel::getValue()
+     */
     public function getValue()
     {
-      if(is_array($value=parent::getValue()))
-        return $value;
-
-      return array();
+      return (array)parent::getValue();
     }
     //--------------------------------------------------------------------------
 
 
     // IMPLEMENTATION
+    /**
+     * @var array|mixed
+     */
     protected $m_options=array();
+    //-----
+
+
+    /**
+     * (non-PHPdoc)
+     * @see \Components\Ui_Panel::onRetrieveValue()
+     */
+    protected function onRetrieveValue()
+    {
+      if(false===$this->hasBeenSubmitted())
+        return;
+
+      $params=$this->scriptlet->request->getParams();
+
+      $value=array();
+      if($params->containsKey($this->getId()))
+        $value=$params->get($this->getId());
+
+      $this->setValue((array)$value);
+    }
     //--------------------------------------------------------------------------
   }
 ?>

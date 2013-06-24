@@ -1,11 +1,10 @@
-<? namespace Components; ?>
 <!DOCTYPE html>
 <html>
   <head>
-    <title><?= $this->title; ?></title>
+    <title><?= $this->self->title; ?></title>
     <? /* FIXME (CSH) $this->printReferences();*/ ?>
   </head>
   <body>
-    <?= $this->panel->display(); ?>
+    <?= $this->self->panel->display(); ?>
   </body>
 </html>

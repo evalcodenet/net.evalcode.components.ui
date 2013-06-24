@@ -12,55 +12,14 @@ namespace Components;
    *
    * @author evalcode.net
    */
-  class Ui_Scriptlet_Test extends Http_Scriptlet
+  class Ui_Scriptlet_Test extends Ui_Scriptlet
   {
-    // OVERRIDES/IMPLEMENTS
-    public function get()
+    // IMPLEMENTATION
+    protected function init()
     {
-      $root=new Ui_Panel_Root('root');
-      $root->scriptlet=$this;
+      parent::init();
 
-      $root->add(new Ui_Scriptlet_Test_Panel('test'));
-
-      $root->display();
-    }
-
-    public function post()
-    {
-      return $this->get();
-    }
-    //--------------------------------------------------------------------------
-
-
-    // OVERRIDES
-    /**
-    * (non-PHPdoc)
-    * @see Components\Object::equals()
-    */
-    public function equals($object_)
-    {
-      if($object_ instanceof self)
-        return $this->hashCode()===$object_->hashCode();
-
-      return false;
-    }
-
-    /**
-     * (non-PHPdoc)
-     * @see Components\Object::hashCode()
-     */
-    public function hashCode()
-    {
-      return object_hash($this);
-    }
-
-    /**
-     * (non-PHPdoc)
-     * @see Components\Object::__toString()
-     */
-    public function __toString()
-    {
-      return sprintf('%s@%s{}', __CLASS__, $this->hashCode());
+      $this->panel->add(new Ui_Scriptlet_Test_Panel('test'));
     }
     //--------------------------------------------------------------------------
   }
@@ -85,10 +44,10 @@ namespace Components;
       $this->form='test';
 
       $this->add(new Ui_Panel_Datetime('date'));
-
       $this->add(new Ui_Panel_Tabs('tabs'));
 
       $this->tabs->add(new Ui_Panel_Text('text', null, 'Text'));
+      $this->tabs->add(new Ui_Panel_Image('image', Io_Image::valueOf('/tmp/image.png'), 'Image'));
       $this->tabs->add(new Ui_Panel_Upload_File('file', null, 'File'));
       $this->tabs->add(new Ui_Panel_Select('list', null, 'List', array('A', 'B', 'C')));
       $this->tabs->add(new Ui_Panel_Html('html', null, 'HTML'));
@@ -105,6 +64,7 @@ namespace Components;
     /*private*/ function onSubmit()
     {
       $this->date->setValue(Date::now());
+
       $this->redraw(true);
     }
     //--------------------------------------------------------------------------

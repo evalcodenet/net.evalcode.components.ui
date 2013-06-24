@@ -37,8 +37,8 @@ namespace Components;
 
     // PROPERTIES
     /**
-     * @var \Components\Properties
-     */
+    * @var \Components\Properties
+    */
     public $params;
     /**
      * @var \Components\Ui_Panel_Session
@@ -56,6 +56,10 @@ namespace Components;
      * @var string
      */
     public $form;
+    /**
+     * @var string
+     */
+    public $typeValue;
     //--------------------------------------------------------------------------
 
 
@@ -131,14 +135,35 @@ namespace Components;
       return $this->m_name;
     }
 
+    /**
+     * @return mixed|\Components\Value
+     */
     public function getValue()
     {
       return $this->m_value;
     }
 
+    /**
+     * @param mixed|\Components\Value $value_
+     */
     public function setValue($value_)
     {
-      $this->m_value=$value_;
+      if(null===$this->typeValue)
+      {
+        $this->m_value=$value_;
+      }
+      else
+      {
+        if($value_ instanceof $this->typeValue)
+        {
+          $this->m_value=$value_;
+        }
+        else
+        {
+          $type=$this->typeValue;
+          $this->m_value=$type::valueOf($value_);
+        }
+      }
     }
 
     public function getTitle()
@@ -164,7 +189,7 @@ namespace Components;
       $this->m_attributes[$name_]=$value_;
     }
 
-    // TODO (CSH( Use components/type/hashmap or similar and its __toString().
+    // TODO Use components/type/hashmap#__toString().
     public function getAttributesAsString()
     {
       $attributes=array();
@@ -256,6 +281,33 @@ namespace Components;
       $this->m_triggerJs[$type]=array('method'=>$method, 'args'=>$args);
     }
 
+    public function hasBeenSubmitted()
+    {
+      if(isset(self::$m_submittedPanelIds[$this->m_id]))
+        return self::$m_submittedPanelIds[$this->m_id];
+
+      if(self::$m_submittedPanelId===$this->m_id)
+        return self::$m_submittedPanelIds[$this->m_id]=true;
+
+      $panel=$this;
+
+      $panelIds=array();
+      while($panel=$panel->m_parent)
+      {
+        $panelIds[]=$panel->m_id;
+
+        if(self::$m_submittedPanelId===$panel->m_id)
+        {
+          foreach($panelIds as $panelId)
+            self::$m_submittedPanelIds[$panelId]=true;
+
+          return self::$m_submittedPanelIds[$this->m_id]=true;
+        }
+      }
+
+      return self::$m_submittedPanelIds[$this->m_id]=false;
+    }
+
     public function fetch()
     {
       ob_start();
@@ -286,7 +338,7 @@ namespace Components;
 
       echo $this->render();
 
-      // TODO (CSH) Manage external resources centralized, e.g. in ui/scriptlet.
+      // TODO Manage external resources centralized, e.g. in ui/scriptlet via TBD scriptlet/router..
       if(null===$this->m_parent || count($this->m_scripts) || count($this->m_stylesheets))
       {
         echo '<script type="text/javascript">';
@@ -425,6 +477,7 @@ namespace Components;
 
     // IMPLEMENTATION
     private static $m_submittedPanelId;
+    private static $m_submittedPanelIds=array();
     private static $m_forms=array();
 
     private $m_attributes=array();
@@ -548,7 +601,7 @@ namespace Components;
         if('null'===$value)
           $this->m_value=null;
         else
-          $this->m_value=$value;
+          $this->setValue($value);
       }
     }
 
@@ -577,6 +630,8 @@ namespace Components;
     {
       if(isset($this->m_children[$name_]))
         $this->m_children[$name_]->display();
+      else if(Debug::active())
+        Log::debug('components/ui/panel', 'Can not display undefined panel [%s]', $name_);
     }
 
     /*private*/ function hasCallbackAjax()
@@ -670,10 +725,10 @@ namespace Components;
             <h2 class="title">%2$s (%3$s)</h2>
             <a href="javascript:void(0);" rel="%1$s-errors" class="ui_panel_disclosure_toggle%4$s">collapse</a>
           </div>',
-            $this->m_id,
-            String::escapeHtml(I18n::translate('ui/panel/errors/title')),
-            $count,
-            $count>$expandThreshold_?'':' expanded'
+          $this->m_id,
+          String::escapeHtml(I18n::translate('ui/panel/errors/title')),
+          $count,
+          $count>$expandThreshold_?'':' expanded'
       );
 
       printf('<ul id="%1$s-errors" class="ui_panel_errors">', $this->m_id);

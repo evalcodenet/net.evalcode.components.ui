@@ -15,9 +15,23 @@ namespace Components;
   class Ui_Scriptlet extends Http_Scriptlet
   {
     // PROPERTIES
-    public static $embedded;
-    public static $transferSessionId;
+    /**
+     * @var string
+     */
     public $title;
+    /**
+     * @var \Components\Ui_Panel
+     */
+    public $panel;
+
+    /**
+     * @var boolean
+     */
+    public static $embedded;
+    /**
+     * @var string
+     */
+    public static $transferSessionId;
     //--------------------------------------------------------------------------
 
 
@@ -81,7 +95,22 @@ namespace Components;
 
       // TODO Not a submitted form or ajax request - Implement regular routing ...
       if(false===$params->containsKey('ui-panel-submitted'))
+      {
+        if(__CLASS__!==get_class($this))
+        {
+          if(false===isset($_SESSION))
+            session_start();
+
+          $this->init();
+
+          $engine=new Ui_Template();
+          $engine->self=$this;
+
+          return $engine->render(__DIR__.'/scriptlet.tpl');
+        }
+
         throw Http_Exception::notFound('ui/scriptlet');
+      }
 
       Ui_Panel::setSubmittedPanelId(
         $submittedPanelId=$params->get('ui-panel-submitted')
@@ -122,7 +151,7 @@ namespace Components;
       {
         $type=String::pathToType($type);
 
-        $panels[$i]=new $type($name);
+        $panels[$i]=$this->panel=new $type($name);
         if($panels[$i] instanceof Ui_Panel_Root)
           $panels[$i]->scriptlet=$this;
         else if(false===isset($panels[$i-1]->$name))
@@ -189,6 +218,17 @@ namespace Components;
     public function __toString()
     {
       return sprintf('%s@%s{}', __CLASS__, $this->hashCode());
+    }
+    //--------------------------------------------------------------------------
+
+
+    // IMPLEMENTATION
+    protected function init()
+    {
+      $this->panel=new Ui_Panel_Root('ui-panel');
+      $this->panel->scriptlet=$this;
+
+      // Override for router-free ui/panel dispatch.
     }
     //--------------------------------------------------------------------------
   }

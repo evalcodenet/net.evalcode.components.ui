@@ -14,7 +14,7 @@ namespace Components;
    *
    * TODO Refactor to use Io_Path, Io_File..
    */
-  class Ui_Panel_Upload_File extends Ui_Panel
+  class Ui_Panel_Upload_File extends Ui_Panel implements Countable
   {
     // PROPERTIES
     public static $implArchives=array(
@@ -32,11 +32,28 @@ namespace Components;
      * as if they were uploaded one by one.
      */
     public $extractArchives=false;
+
+    public $multiFileUpload=false;
     //--------------------------------------------------------------------------
 
 
-    // ACCESSORS
-    public function countFiles()
+    // INITIALIZATION
+    protected function init()
+    {
+      parent::init();
+
+      $this->addStylesheet('ui/upload/file');
+      $this->addStylesheet('/io/resource/css/mimetype.css');
+
+      $this->addScript('ui/upload/file');
+
+      $this->setTemplate(__DIR__.'/file.tpl');
+    }
+    //--------------------------------------------------------------------------
+
+
+    // ACCESSORS/MUTATORS
+    public function count()
     {
       return count($this->m_files);
     }
@@ -58,21 +75,6 @@ namespace Components;
     //--------------------------------------------------------------------------
 
 
-    // INITIALIZATION
-    protected function init()
-    {
-      parent::init();
-
-      $this->addStylesheet('ui/upload/file');
-      $this->addStylesheet('/io/resource/css/mimetype.css');
-
-      $this->addScript('ui/upload/file');
-
-      $this->setTemplate(__DIR__.'/file.tpl');
-    }
-    //--------------------------------------------------------------------------
-
-
     // IMPLEMENTATION
     private $m_files=array();
     private $m_fileActionsJs=array();
@@ -83,10 +85,9 @@ namespace Components;
     {
       parent::initTemplateEngine($engine_);
 
-      $engine_->countFiles=array($this, 'countFiles');
-      $engine_->getFiles=array($this, 'getFiles');
-
-      $engine_->printFile=array($this, 'printFile');
+      $engine_->count=array($this, 'count');
+      $engine_->files=array($this, 'getFiles');
+      $engine_->file=array($this, 'printFile');
     }
 
     protected function onRetrieveValue()
@@ -113,8 +114,7 @@ namespace Components;
 
     private function scanUploadPath(Io_Path $path_, $subPath_='', array &$files_)
     {
-      if(false===String::isEmpty($subPath_)
-        && false===String::endsWith($subPath_, '/'))
+      if(false===String::isEmpty($subPath_) && false===String::endsWith($subPath_, '/'))
         $subPath_.='/';
 
       foreach($path_ as $entry)
@@ -136,8 +136,7 @@ namespace Components;
 
     private function scanTemporaryUploadPath(Io_Path $path_, $subPath_='')
     {
-      if(false===String::isEmpty($subPath_)
-        && false===String::endsWith($subPath_, '/'))
+      if(false===String::isEmpty($subPath_) && false===String::endsWith($subPath_, '/'))
         $subPath_.='/';
 
       foreach($path_ as $entry)
@@ -160,7 +159,10 @@ namespace Components;
 
       if(!$this->isValidMimetype($mimeType) || !$this->isValidFileExtension($file_->getExtension()))
       {
-        $this->addError(I18n::translatef('ui/panel/upload/file/error/illegal_mimetype', $mimeType->title(), $file_->getName()));
+        $this->addError(I18n::translatef('ui/panel/upload/file/error/illegal_mimetype',
+          $mimeType->title(), $file_->getName()
+        ));
+
         $file_->delete();
 
         return;
@@ -170,7 +172,10 @@ namespace Components;
       {
         if(false===isset(self::$implArchives[$mimeType->name()]))
         {
-          $this->addError(I18n::translatef('ui/panel/upload/file/error/unsupported_archive', $mimeType->name()));
+          $this->addError(I18n::translatef('ui/panel/upload/file/error/unsupported_archive',
+            $mimeType->name()
+          ));
+
           $file_->delete();
 
           return;
@@ -218,12 +223,14 @@ namespace Components;
     /*private*/ function printFile(Io_File $file_, $subPath_, $mimeTypeIconSize_=Io_Mimetype::ICON_SIZE_64)
     {
       $actions=array();
+
       foreach($this->m_fileActionsJs as $name=>$action)
       {
         if(false===($callback=call_user_func_array($action['callback'], array($file_))))
           continue;
 
         $function=array_shift($callback);
+
         $actions[]=sprintf('<a href="javascript:void(0);" onclick="%3$s(%4$s);" class="%1$s">%2$s</a>',
           $name,
           $action['title'],
@@ -287,6 +294,7 @@ namespace Components;
      */
     private static function getTemporaryUploadPath()
     {
+      // FIXME Use panel id.
       $path=Io::tmpPath('upload', false);
 
       if(false===$path->exists())
@@ -341,6 +349,7 @@ namespace Components;
     /*private*/ static function upload()
     {
       $failed=array();
+
       foreach($_FILES as $key=>$file)
       {
         try

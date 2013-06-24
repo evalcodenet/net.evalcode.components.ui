@@ -70,6 +70,7 @@ namespace Components;
   {
     // PREDEFINED PROPERTIES
     const HIDDEN='hidden';
+    const IMAGE='image';
     const TEXT='text';
     //--------------------------------------------------------------------------
 
@@ -106,6 +107,7 @@ namespace Components;
     // IMPLEMENTATION
     private static $m_types=array(
       'HIDDEN',
+      'IMAGE',
       'TEXT'
     );
     //--------------------------------------------------------------------------
