@@ -75,7 +75,7 @@ namespace Components;
           if(false===$image->exists())
           {
             $value->scale(Point::of($width, $height));
-            $value->saveTo($image);
+            $value->saveAs($image);
           }
         }
         else
