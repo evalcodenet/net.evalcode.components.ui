@@ -44,6 +44,12 @@ namespace Components;
       $this->form='test';
 
       $this->add(new Ui_Panel_Datetime('date'));
+      $this->add(new Ui_Panel_Label('labela', null, I18n_Script_Han::toLatin('Google.com.hk 使用下列语言： 中文（繁體） English')));
+      $this->add(new Ui_Panel_Label('labelb', null, I18n_Script_Han::toLatin('Google.com.hk 使用下列语言： 中文（繁體） English')));
+      $this->add(new Ui_Panel_Label('labelc', null, I18n_Script_Han::toLatin('Google.com.hk 使用下列语言： 中文（繁體） English')));
+      $this->add(new Ui_Panel_Label('labeld', null, I18n_Script_Han::toLatin('Google.com.hk 使用下列语言： 中文（繁體） English')));
+      $this->add(new Ui_Panel_Label('labele', null, I18n_Script_Han::toLatin('Google.com.hk 使用下列语言： 中文（繁體） English')));
+
       $this->add(new Ui_Panel_Tabs('tabs'));
 
       $this->tabs->add(new Ui_Panel_Text('text', null, 'Text'));

@@ -63,9 +63,9 @@ namespace Components;
           $dimensions=$value->getDimensions();
 
           if(!$width)
-            $width=$dimensions->x/($dimensions->y/$height);
+            $width=round($dimensions->x/($dimensions->y/$height));
           else if(!$height)
-            $height=$dimensions->y/($dimensions->x/$width);
+            $height=round($dimensions->y/($dimensions->x/$width));
 
           $this->setAttribute('width', $width);
           $this->setAttribute('height', $height);

@@ -31,24 +31,24 @@ namespace Components;
     public static function forNamespace($namespace_)
     {
       if(false===isset($_SESSION[$namespace_]))
-        $_SESSION[$namespace_]=new self($namespace_);
+        $_SESSION[$namespace_]=new static($namespace_);
 
       return $_SESSION[$namespace_];
     }
 
     public static function has($namespace_, $key_)
     {
-      return isset(self::forNamespace($namespace_)->$key_);
+      return isset(static::forNamespace($namespace_)->$key_);
     }
 
     public static function get($namespace_, $key_)
     {
-      return self::forNamespace($namespace_)->$key_;
+      return static::forNamespace($namespace_)->$key_;
     }
 
     public static function set($namespace_, $key_, $value_)
     {
-      return self::forNamespace($namespace_)->$key_=$value_;
+      return static::forNamespace($namespace_)->$key_=$value_;
     }
 
     /**

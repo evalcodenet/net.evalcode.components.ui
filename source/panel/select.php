@@ -14,6 +14,11 @@ namespace Components;
    */
   class Ui_Panel_Select extends Ui_Panel
   {
+    // PROPERTIES
+    public $emptyOptionTitle=null;
+    //--------------------------------------------------------------------------
+
+
     // CONSTRUCTION
     public function __construct($name_, $value_=null, $title_=null, array $options_=array())
     {
