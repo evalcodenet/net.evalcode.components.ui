@@ -1,0 +1,28 @@
+{
+  "ui":
+  {
+    "panel":
+    {
+      "upload":
+      {
+        "file":
+        {
+          "error":
+          {
+            "illegal_mimetype": "文件类型不支持 [%1$s].",
+            "unsupported_archive": "存档类型不支持 [%1$s]."
+          }
+        }
+      },
+      "errors":
+      {
+        "title": "错误"
+      },
+      "disclosure":
+      {
+        "expand": "展开",
+        "collapse": "收起"
+      }
+    }
+  }
+}

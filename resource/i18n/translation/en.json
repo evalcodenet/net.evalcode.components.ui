@@ -1,0 +1,28 @@
+{
+  "ui":
+  {
+    "panel":
+    {
+      "upload":
+      {
+        "file":
+        {
+          "error":
+          {
+            "illegal_mimetype": "File type is not allowed [%1$s].",
+            "unsupported_archive": "Archive type is not supported [%1$s]."
+          }
+        }
+      },
+      "errors":
+      {
+        "title": "Errors"
+      },
+      "disclosure":
+      {
+        "expand": "expand",
+        "collapse": "collapse"
+      }
+    }
+  }
+}
