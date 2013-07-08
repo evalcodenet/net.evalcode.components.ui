@@ -54,7 +54,7 @@ namespace Components;
       $this->add(new Ui_Panel_Tabs('tabs'));
 
       $this->tabs->add(new Ui_Panel_Text('text', null, 'Text'));
-      $this->tabs->add(new Ui_Panel_Image('image', Io_Image::valueOf('/tmp/image.png'), 'Image'));
+      $this->tabs->add(new Ui_Panel_Image('image', Io_Image::valueOf(Environment::pathApplication().'/favicon.ico'), 'Image'));
       $this->tabs->add(new Ui_Panel_Upload_File('file', null, 'File'));
       $this->tabs->add(new Ui_Panel_Select('list', null, 'List', array('A', 'B', 'C')));
       $this->tabs->add(new Ui_Panel_Html('html', null, 'HTML'));
