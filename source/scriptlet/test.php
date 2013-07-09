@@ -40,6 +40,27 @@ namespace Components;
     {
       parent::init();
 
+            I18n::push(I18n_Locale::en());
+      foreach(I18n_Country::CN()->childNames() as $regionName)
+      {
+        $region=I18n_Country::CN()->$regionName;
+
+        foreach($region->childNames() as $cityName)
+        {
+          $city=$region->$cityName;
+
+          foreach($city->childNames() as $districtName)
+          {
+            I18n::push(I18n_Locale::zh());
+            var_dump((string)$city->$districtName->title());
+            I18n::pop();
+            var_dump((string)$city->$districtName->title());
+          }
+        }
+      }
+
+      return;
+
       // FIXME (CSH) Re-implement fallback / root panel submission / find a better solution ...
       $this->form='test';
 
