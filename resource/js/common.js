@@ -46,7 +46,7 @@
       submittedForm=jQuery(anyFormElement_).parents("[class*=ui_panel_form]");
 
     if(null==submittedForm || 1>submittedForm.length)
-      return "ui_panel_root";
+      return ui_panel_root_id;
 
     var submittedFormName=jQuery(submittedForm).attr("class");
     var submittedFormNameIdx=0;
@@ -80,7 +80,7 @@
 
     var submittedPanel=jQuery("#"+panelIdSubmitted_);
     var submittedFormName=ui_panel_form_name(submittedPanel);
-
+    
     if(!panelUploadedId_)
     {
       var submittedFormElementsFile=ui_panel_form_elements_file(submittedFormName);
