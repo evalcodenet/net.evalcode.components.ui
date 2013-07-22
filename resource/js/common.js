@@ -30,7 +30,7 @@
     if("string"==typeof(exception_))
       exception_=eval("["+exception_+"]")[0];
 
-    error(exception_.type, exception_.message);
+    error(exception_.type, exception_.message, exception_);
   }
 
   function ui_panel_form_name(anyFormElement_)

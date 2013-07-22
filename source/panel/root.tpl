@@ -105,7 +105,7 @@
         if("undefined"==typeof(exception_))
           console.error("["+namespace_+"] "+message_);
         else
-          console.error("["+namespace_+"] "+message_, exception_);
+          console.error("["+namespace_+"] "+message_, exception_.stack?exception_.stack:exception_);
       }
     }
 
