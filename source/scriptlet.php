@@ -46,42 +46,41 @@ namespace Components;
       try
       {
         $content=parent::dispatch($context_, $uri_);
+
+        $exception=$response->getException();
       }
       catch(\Exception $e)
       {
-        if(!$e instanceof Http_Exception)
-          $e=new Http_Exception_Wrapper($e);
-
         $exception=$e;
       }
 
-      if(null===$exception)
-        $exception=$response->getException();
-
-      if(Io_Mimetype::APPLICATION_JSON()->equals($response->getMimetype()))
+      if($response->getMimetype()->isApplicationJson())
       {
         $parameters=$response->getParameters();
         $parameters['content']=$content;
 
         if(null!==$exception)
         {
-          $exception->log();
-          $exception->sendHeader();
+          // Only log and indicate an exception for AJAX requests ..
+          exception_log($exception);
+
+          Http_Exception::sendHeaderInternalError();
+
+          // .. yet admin/development access should see more details
+          if(Runtime::isManagementAccess())
+            $parameters['exception']=exception_as_json($exception);
 
           $response->unsetException();
-
-          if(Debug::active() && Runtime::isManagementAccess())
-            $parameters['exception']=$exception->toJson();
         }
 
         echo json_encode(array($parameters));
       }
       else
       {
+        echo $content;
+
         if(null!==$exception)
           throw $exception;
-
-        echo $content;
       }
     }
     //--------------------------------------------------------------------------
@@ -98,6 +97,7 @@ namespace Components;
       {
         if(__CLASS__!==get_class($this))
         {
+          // FIXME Session may still not be necessarily required / make lazy?
           if(false===isset($_SESSION))
             session_start();
 
@@ -116,7 +116,10 @@ namespace Components;
         $submittedPanelId=$params->get('ui-panel-submitted')
       );
 
-      // TODO Store & verify possibly correct session ids per useragent+host to prevent stealing ..
+      /**
+       * TODO Check & close possibilities to exploit this for
+       * i.e. session stealing hijacking.
+       */
       if(!session_id() && $params->containsKey('ui-panel-sid'))
         session_id($params->get('ui-panel-sid'));
 
@@ -144,6 +147,11 @@ namespace Components;
       $redraw=null;
       $panels=array();
 
+      /**
+       * TODO Either obsolete/remove with regular routing or implement
+       * a solution to selectively initialize requested/required panel(s) and
+       * dependencies instead of whole panel tree.
+       */
       $form=json_decode($form);
 
       $i=0;
@@ -151,11 +159,18 @@ namespace Components;
       {
         $type=String::pathToType($type);
 
-        $panels[$i]=$this->panel=new $type($name);
-        if($panels[$i] instanceof Ui_Panel_Root)
-          $panels[$i]->scriptlet=$this;
-        else if(false===isset($panels[$i-1]->$name))
-          $panels[$i-1]->add($panels[$i]);
+        if(0===$i)
+        {
+          $this->panel=$panels[$i]=new $type($name);
+          $this->panel->scriptlet=$this;
+        }
+        else
+        {
+          if(isset($panels[$i-1]->$name))
+            $panels[$i]=$panels[$i-1]->$name;
+          else
+            $panels[$i-1]->add($panels[$i]=new $type($name));
+        }
 
         if(null===$redraw && $panels[$i]->redraw())
           $redraw=$panels[$i];
@@ -170,7 +185,11 @@ namespace Components;
         return $redraw->fetch();
       }
 
-      // FIXME (CSH) If we allow callbacks to selectivly redraw sub-panels, we need to support multiple redraw panels.
+      /**
+       * FIXME (CSH) We need to support multiple redraw panels
+       * per request/response if we allow callbacks to selectively
+       * request (sub-)panels.
+       */
       foreach(end($panels)->getPanels() as $panel)
       {
         if($panel->redraw())

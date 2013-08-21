@@ -12,6 +12,7 @@ namespace Components;
    *
    * @author evalcode.net
    */
+  // FIXME Remove this panel / merge into ui/scriptlet
   class Ui_Panel_Root extends Ui_Panel
   {
     // PROPERTIES

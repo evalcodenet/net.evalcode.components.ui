@@ -44,12 +44,10 @@ namespace Components;
       $this->form='test';
 
       $this->add(new Ui_Panel_Datetime('date'));
-      $this->add(new Ui_Panel_Label('labela', null, I18n_Script::Hans()->transformToLatn('Google.com.hk 使用下列语言： 中文（繁體） English')));
-      $this->add(new Ui_Panel_Label('labelb', null, I18n_Script::Hans()->transformToAscii('Google.com.hk 使用下列语言： 中文（繁體） English')));
-      $this->add(new Ui_Panel_Label('labelc', null, I18n_Script::Hans()->transformToLatn('Google.com.hk 使用下列语言： 中文（繁體） English')));
-      $this->add(new Ui_Panel_Label('labeld', null, I18n_Script::Hans()->transformToAscii('Google.com.hk 使用下列语言： 中文（繁體） English')));
-      $this->add(new Ui_Panel_Label('labele', null, I18n_Script::Hans()->transformToLatn('Google.com.hk 使用下列语言： 中文（繁體） English')));
-      $this->add(new Ui_Panel_Label('labelf', null, I18n_Script::Hans()->transformToAscii('Google.com.hk 使用下列语言： 中文（繁體） English')));
+      $this->add(new Ui_Panel_Label('labela', null, 'Google.com.hk 使用下列语言： 中文（繁體） English'));
+      $this->add(new Ui_Panel_Label('labelb', null, I18n_Script::Hans()->transformToLatn('Google.com.hk 使用下列语言： 中文（繁體） English')));
+      $this->add(new Ui_Panel_Label('labelc', null, I18n_Script::Hans()->transformToAscii('Google.com.hk 使用下列语言： 中文（繁體） English')));
+      $this->add(new Ui_Panel_Label('labeld', null, String::toLowercaseUrlIdentifier(I18n_Script::Hans()->transformToAscii('Google.com.hk 使用下列语言： 中文（繁體） English'))));
 
       $this->add(new Ui_Panel_Tabs('tabs'));
 
@@ -71,6 +69,7 @@ namespace Components;
     /*private*/ function onSubmit()
     {
       $this->date->setValue(Date::now());
+      $this->tabs->html->setValue($this->tabs->html->getValue());
 
       $this->redraw(true);
     }

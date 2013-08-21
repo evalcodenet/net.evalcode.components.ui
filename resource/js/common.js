@@ -14,9 +14,31 @@
   // PROPERTIES
   var ui_panel_upload=new Array();
   var ui_panel_disclosure=new Array();
+  var ui_panel_bindings=new Array();
 
 
   // IMPLEMENTATION
+  function ui_panel(formElementId_, name_, value_)
+  {
+    if(!ui_panel_bindings[formElementId_])
+      ui_panel_bindings[formElementId_]={id: formElementId_};
+
+    if("undefined"!=typeof(name_))
+    {
+      if("undefined"!=typeof(value_))
+        return ui_panel_bindings[formElementId_][name_]=value_;
+
+      return ui_panel_bindings[formElementId_][name_];
+    }
+
+    return ui_panel_bindings[formElementId_];
+  }
+
+  function ui_panel_has(formElementId_, name_)
+  {
+    return ui_panel_bindings[formElementId_] && ui_panel_bindings[formElementId_][name_];
+  }
+  
   function ui_panel_dump_debug(response_)
   {
     var dump=response_.getResponseHeader("Components-Debug");
@@ -113,6 +135,11 @@
 
     var submittedFormElements=ui_panel_form_elements(submittedFormName);
     var parameters=submittedFormElements.serializeArray();
+
+    jQuery.each(parameters, function(key, property) {
+      if(ui_panel_has(property.name, "value"))
+        property.value=ui_panel(property.name, "value")();
+    });
 
     parameters.push({"name": "ui-panel-form", "value": ui_panel_forms[0][submittedFormName]});
     parameters.push({"name": "ui-panel-submitted", "value": panelIdSubmitted_});

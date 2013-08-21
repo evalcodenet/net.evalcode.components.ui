@@ -61,8 +61,18 @@
       forced_root_block: "",
       relative_urls: false
     });
+
+    ui_panel(panelIdHtml_, "value", function() {
+      return tinyMCE.get(panelIdHtml_).getContent();
+    });
   }
 
+  /**
+   * @deprecated
+   * 
+   * @see 
+   * ui_panel(panelId_, "value");
+   */
   function ui_panel_html_value(panelIdHtml_)
   {
     return tinyMCE.get(panelIdHtml_).getContent();
