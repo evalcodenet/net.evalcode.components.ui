@@ -17,6 +17,9 @@ namespace Components;
     // OVERRIDES/IMPLEMENTS
     public function render()
     {
+      if($attributes=$this->getAttributesAsString())
+        $attributes=String::pad($attributes, 1, ' ', String::PAD_LEFT);
+
       if(0<count($panels=$this->getPanels()))
       {
         $panel=reset($panels);
@@ -26,13 +29,13 @@ namespace Components;
         if(!$title=$this->getTitle())
           $title=$panel->getTitle();
 
-        return sprintf('<label for="%1$s">%2$s</label>%3$s', $id, $title, $panel->fetch());
+        return sprintf('<label for="%1$s"%3$s>%2$s</label>%4$s', $id, $title, $attributes, $panel->fetch());
       }
 
       if($id=$this->getValue())
-        return sprintf('<label for="%1$s">%2$s</label>', $id, $this->getTitle());
+        return sprintf('<label for="%1$s"%3$s>%2$s</label>', $id, $this->getTitle(), $attributes);
 
-      return sprintf('<label>%1$s</label>', $this->getTitle());
+      return sprintf('<label%2$s>%1$s</label>', $this->getTitle(), $attributes);
     }
     //--------------------------------------------------------------------------
   }

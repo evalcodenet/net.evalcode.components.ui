@@ -12,9 +12,9 @@
 
 
   // PROPERTIES
-  var ui_panel_upload=new Array();
-  var ui_panel_disclosure=new Array();
-  var ui_panel_bindings=new Array();
+  var ui_panel_upload=[];
+  var ui_panel_disclosure=[];
+  var ui_panel_bindings=[];
 
 
   // IMPLEMENTATION
@@ -322,6 +322,7 @@
       element.innerHTML=ui_panel_tag_strip(response_.content, "script");
 
       var nodes=new Array();
+
       for(var i=0; i<element.childNodes.length; i++)
       {
         if(3!=element.childNodes[i].nodeType && 8!=element.childNodes[i].nodeType)

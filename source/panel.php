@@ -26,6 +26,7 @@ namespace Components;
     const ELEMENT_LIST='ul';
     const ELEMENT_LIST_ITEM='li';
     const ELEMENT_DEFINITION_LIST='dl';
+    const ELEMENT_TABLE='table';
     const ELEMENT_TABLE_CELL='td';
     const ELEMENT_TABLE_ROW='tr';
     const ELEMENT_DEFAULT=self::ELEMENT_BLOCK;
@@ -572,6 +573,7 @@ namespace Components;
       $engine_->panels=$this->m_children;
 
       $engine_->value=array($this, 'getValue');
+      $engine_->has=array($this, 'hasPanel');
       $engine_->panel=array($this, '__get');
       $engine_->display=array($this, 'displayPanel');
       $engine_->attributes=array($this, 'getAttributesAsString');
@@ -626,6 +628,11 @@ namespace Components;
 
 
     // TEMPLATE METHODS
+    /*private*/ function hasPanel($name_)
+    {
+      return isset($this->m_children[$name_]);
+    }
+
     /*private*/ function displayPanel($name_)
     {
       if(isset($this->m_children[$name_]))

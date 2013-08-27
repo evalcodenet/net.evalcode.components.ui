@@ -1,26 +1,28 @@
 <? namespace Components; ?>
 <script type="text/javascript">
-  if("undefined"==typeof(ui_panel_root_id))
+  if("undefined"==typeof(window.ui_panel_root_id))
   {
     <? if(Ui_Scriptlet::$transferSessionId): ?>
-      var ui_panel_transfer_sid="<?= session_id(); ?>";
+      window.ui_panel_transfer_sid="<?= session_id(); ?>";
     <? endif; ?>
+
     <? if(Ui_Scriptlet::$embedded): ?>
-      var ui_panel_route="<?= Environment::uriComponentsEmbedded('ui'); ?>";
+      window.ui_panel_route="<?= Environment::uriComponentsEmbedded('ui'); ?>";
     <? else: ?>
-      var ui_panel_route="<?= Environment::uriComponents('ui'); ?>";
+      window.ui_panel_route="<?= Environment::uriComponents('ui'); ?>";
     <? endif; ?>
-    var ui_panel_debug=<? if(Debug::active()): ?>true<? else: ?>false<? endif; ?>;
-    var ui_panel_forms=new Array();
-    var ui_panel_scripts=new Array();
-    var ui_panel_stylesheets=new Array();
-    var ui_panel_root_id="<?= $this->id(); ?>";
 
-    var ui_panel_resource_callbacks=new Array();
-    var ui_panel_resource_callbacks_pending=new Array();
+    window.ui_panel_root_id="<?= $this->id(); ?>";
+    window.ui_panel_debug=<? if(Debug::active()): ?>true<? else: ?>false<? endif; ?>;
+    window.ui_panel_forms=[];
+    window.ui_panel_scripts=[];
+    window.ui_panel_stylesheets=[];
+
+    window.ui_panel_resource_callbacks=[];
+    window.ui_panel_resource_callbacks_pending=[];
 
 
-    ui_panel_resource_callbacks_invoke=function()
+    window.ui_panel_resource_callbacks_invoke=function()
     {
       var next=null;
 
@@ -46,7 +48,7 @@
       }
     }
 
-    ui_panel_resource_callback_add=function(name_, callback_)
+    window.ui_panel_resource_callback_add=function(name_, callback_)
     {
       ui_panel_resource_callbacks_pending.push(callback_);
       ui_panel_resource_callbacks_invoke();
@@ -55,15 +57,17 @@
 
     if("undefined"==typeof(console))
     {
-      var assert=function(namespace_, message_, assertion_) {return assertion_;}
-      var error=function(namespace_, message_, exception_) {}
-      var profile_begin=function() {}
-      var profile_end=function() {}
+      window.log=function(namespace_, message_, arg_) {}
+      window.debug=function(namespace_, message_, arg_) {}
+      window.assert=function(namespace_, message_, assertion_) {return assertion_;}
+      window.error=function(namespace_, message_, exception_) {}
+      window.profile_begin=function() {}
+      window.profile_end=function() {}
     }
     else
     {
       <? if(Debug::active()): ?>
-        var log=function(namespace_, message_, arg_)
+        window.log=function(namespace_, message_, arg_)
         {
           if("undefined"==typeof(arg_))
             console.log("["+namespace_+"] "+message_);
@@ -71,7 +75,7 @@
             console.log("["+namespace_+"] "+message_, arg_);
         }
 
-        var debug=function(namespace_, message_, arg_)
+        window.debug=function(namespace_, message_, arg_)
         {
           if("undefined"==typeof(arg_))
             console.warn("["+namespace_+"] "+message_);
@@ -79,28 +83,28 @@
             console.warn("["+namespace_+"] "+message_, arg_);
         }
 
-        var profile_begin=function()
+        window.profile_begin=function()
         {
           console.profile();
         }
 
-        var profile_end=function()
+        window.profile_end=function()
         {
           console.profileEnd();
         }
       <? else: ?>
-        var log=function(namespace_, message_, arg_) {}
-        var debug=function(namespace_, message_, arg_) {}
-        var profile_begin=function() {}
-        var profile_end=function() {}
+        window.log=function(namespace_, message_, arg_) {}
+        window.debug=function(namespace_, message_, arg_) {}
+        window.profile_begin=function() {}
+        window.profile_end=function() {}
       <? endif; ?>
 
-      var assert=function(namespace_, message_, assertion_)
+      window.assert=function(namespace_, message_, assertion_)
       {
         console.assert(assertion_, "["+namespace_+"] "+message_);
       }
 
-      var error=function(namespace_, message_, exception_)
+      window.error=function(namespace_, message_, exception_)
       {
         if("undefined"==typeof(exception_))
           console.error("["+namespace_+"] "+message_);
@@ -109,7 +113,7 @@
       }
     }
 
-    ui_panel_script_add=function(name_, async_, condition_, callback_, timestampLastModification_)
+    window.ui_panel_script_add=function(name_, async_, condition_, callback_, timestampLastModification_)
     {
       if(condition_ && !eval(condition_))
         return;
@@ -137,7 +141,7 @@
       elementsHead[0].appendChild(elementScript);
     }
 
-    ui_panel_stylesheet_add=function(name_, async_, media_, timestampLastModification_)
+    window.ui_panel_stylesheet_add=function(name_, async_, media_, timestampLastModification_)
     {
       if(ui_panel_stylesheets && ui_panel_stylesheets[name_])
         return;
@@ -156,7 +160,7 @@
       elementsHead[0].appendChild(elementLink);
     }
 
-    ui_panel_form_add=function(name_, path_)
+    window.ui_panel_form_add=function(name_, path_)
     {
       ui_panel_forms.push(path_);
     }
