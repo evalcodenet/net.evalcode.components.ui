@@ -25,9 +25,7 @@ namespace Components;
 
 
     // INITIALIZATION
-    /**
-     * (non-PHPdoc)
-     * @see \Components\Ui_Panel::init()
+    /**     * @see \Components\Ui_Panel::init() \Components\Ui_Panel::init()
      */
     protected function init()
     {
@@ -41,9 +39,7 @@ namespace Components;
 
 
     // OVERRIDES/IMPLEMENTS
-    /**
-     * (non-PHPdoc)
-     * @see \Components\Ui_Panel::getValue()
+    /**     * @see \Components\Ui_Panel::getValue() \Components\Ui_Panel::getValue()
      */
     public function getValue()
     {
@@ -60,9 +56,7 @@ namespace Components;
     //-----
 
 
-    /**
-     * (non-PHPdoc)
-     * @see \Components\Ui_Panel::onRetrieveValue()
+    /**     * @see \Components\Ui_Panel::onRetrieveValue() \Components\Ui_Panel::onRetrieveValue()
      */
     protected function onRetrieveValue()
     {

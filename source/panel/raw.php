@@ -15,9 +15,7 @@ namespace Components;
   class Ui_Panel_Raw extends Ui_Panel
   {
     // OVERRIDES/IMPLEMENTS
-    /**
-     * (non-PHPdoc)
-     * @see \Components\Ui_Panel::render()
+    /**     * @see \Components\Ui_Panel::render() \Components\Ui_Panel::render()
      */
     public function render()
     {

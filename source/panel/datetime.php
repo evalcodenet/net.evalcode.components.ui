@@ -30,9 +30,7 @@ namespace Components;
 
 
     // IMPLEMENTATION
-    /**
-     * (non-PHPdoc)
-     * @see \Components\Ui_Panel::onRetrieveValue()
+    /**     * @see \Components\Ui_Panel::onRetrieveValue() \Components\Ui_Panel::onRetrieveValue()
      */
     protected function onRetrieveValue()
     {

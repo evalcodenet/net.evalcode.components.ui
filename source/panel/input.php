@@ -77,7 +77,7 @@ namespace Components;
 
     // STATIC ACCESSORS
     /**
-     * @see Components\Enumeration::values()
+     * @see Components\Enumeration::values() Components\Enumeration::values()
      */
     public static function values()
     {

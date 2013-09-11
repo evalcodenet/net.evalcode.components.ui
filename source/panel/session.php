@@ -51,9 +51,7 @@ namespace Components;
       return static::forNamespace($namespace_)->$key_=$value_;
     }
 
-    /**
-     * (non-PHPdoc)
-     * @see \Components\Value_String::valueOf()
+    /**     * @see \Components\Value_String::valueOf() \Components\Value_String::valueOf()
      */
     public static function valueOf($value_)
     {
@@ -63,18 +61,14 @@ namespace Components;
 
 
     // OVERRIDES
-    /**
-     * (non-PHPdoc)
-     * @see \Components\Value_String::value()
+    /**     * @see \Components\Value_String::value() \Components\Value_String::value()
      */
     public function value()
     {
       return $this->m_namespace;
     }
 
-    /**
-     * (non-PHPdoc)
-     * @see \Components\Properties::__toString()
+    /**     * @see \Components\Properties::__toString() \Components\Properties::__toString()
      */
     public function __toString()
     {
