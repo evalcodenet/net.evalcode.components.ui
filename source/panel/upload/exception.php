@@ -7,8 +7,9 @@ namespace Components;
   /**
    * Ui_Panel_Upload_Exception
    *
-   * @package net.evalcode.components
-   * @subpackage ui.panel.upload
+   * @api
+   * @package net.evalcode.components.ui
+   * @subpackage panel.upload
    *
    * @author evalcode.net
    */

@@ -7,14 +7,15 @@ namespace Components;
   /**
    * Ui_Panel_Label
    *
-   * @package net.evalcode.components
-   * @subpackage ui.panel
+   * @api
+   * @package net.evalcode.components.ui
+   * @subpackage panel
    *
    * @author evalcode.net
    */
   class Ui_Panel_Label extends Ui_Panel
   {
-    // OVERRIDES/IMPLEMENTS
+    // OVERRIDES
     public function render()
     {
       if($attributes=$this->getAttributesAsString())

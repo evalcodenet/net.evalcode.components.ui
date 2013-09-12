@@ -7,8 +7,9 @@ namespace Components;
   /**
    * Ui_Panel_Session
    *
-   * @package net.evalcode.components
-   * @subpackage ui.panel
+   * @api
+   * @package net.evalcode.components.ui
+   * @subpackage panel
    *
    * @author evalcode.net
    */
@@ -51,7 +52,8 @@ namespace Components;
       return static::forNamespace($namespace_)->$key_=$value_;
     }
 
-    /**     * @see \Components\Value_String::valueOf() \Components\Value_String::valueOf()
+    /**
+     * @see \Components\Value_String::valueOf() \Components\Value_String::valueOf()
      */
     public static function valueOf($value_)
     {
@@ -61,14 +63,16 @@ namespace Components;
 
 
     // OVERRIDES
-    /**     * @see \Components\Value_String::value() \Components\Value_String::value()
+    /**
+     * @see \Components\Value_String::value() \Components\Value_String::value()
      */
     public function value()
     {
       return $this->m_namespace;
     }
 
-    /**     * @see \Components\Properties::__toString() \Components\Properties::__toString()
+    /**
+     * @see \Components\Properties::__toString() \Components\Properties::__toString()
      */
     public function __toString()
     {

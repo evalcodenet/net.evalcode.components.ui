@@ -7,8 +7,9 @@ namespace Components;
   /**
    * Ui_Panel_Datetime
    *
-   * @package net.evalcode.components
-   * @subpackage ui.panel
+   * @api
+   * @package net.evalcode.components.ui
+   * @subpackage panel
    *
    * @author evalcode.net
    */
@@ -30,7 +31,8 @@ namespace Components;
 
 
     // IMPLEMENTATION
-    /**     * @see \Components\Ui_Panel::onRetrieveValue() \Components\Ui_Panel::onRetrieveValue()
+    /**
+     * @see \Components\Ui_Panel::onRetrieveValue() \Components\Ui_Panel::onRetrieveValue()
      */
     protected function onRetrieveValue()
     {

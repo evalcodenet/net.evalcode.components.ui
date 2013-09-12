@@ -7,8 +7,8 @@ namespace Components;
   /**
    * Ui_Scriptlet_Test
    *
-   * @package net.evalcode.components
-   * @subpackage ui.scriptlet
+   * @package net.evalcode.components.ui
+   * @subpackage scriptlet
    *
    * @author evalcode.net
    */
@@ -28,8 +28,8 @@ namespace Components;
   /**
    * Ui_Scriptlet_Test_Panel
    *
-   * @package net.evalcode.components
-   * @subpackage ui.scriptlet
+   * @package net.evalcode.components.ui
+   * @subpackage scriptlet
    *
    * @author evalcode.net
    */

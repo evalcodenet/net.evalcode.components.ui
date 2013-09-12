@@ -7,8 +7,9 @@ namespace Components;
   /**
    * Ui_Panel_Upload_File
    *
-   * @package net.evalcode.components
-   * @subpackage ui.panel.upload
+   * @api
+   * @package net.evalcode.components.ui
+   * @subpackage panel.upload
    *
    * @author evalcode.net
    *
@@ -27,8 +28,9 @@ namespace Components;
     public $mimeTypesAllowed=array();
     public $mimeTypesForbidden=array('application/x-php', 'application/x-php-source');
 
-    /**
-     * Extract archives and treat contained files
+
+  /**
+   * Extract archives and treat contained files
      * as if they were uploaded one by one.
      */
     public $extractArchives=false;
@@ -52,7 +54,7 @@ namespace Components;
     //--------------------------------------------------------------------------
 
 
-    // ACCESSORS/MUTATORS
+    // ACCESSORS
     public function count()
     {
       return count($this->m_files);

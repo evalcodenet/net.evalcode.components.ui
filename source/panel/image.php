@@ -7,8 +7,9 @@ namespace Components;
   /**
    * Ui_Panel_Image
    *
-   * @package net.evalcode.components
-   * @subpackage ui.panel
+   * @api
+   * @package net.evalcode.components.ui
+   * @subpackage panel
    *
    * @author evalcode.net
    */
@@ -49,7 +50,7 @@ namespace Components;
     //--------------------------------------------------------------------------
 
 
-    // OVERRIDES/IMPLEMENTS
+    // OVERRIDES
     public function render()
     {
       /* @var $value \Components\Io_Image */

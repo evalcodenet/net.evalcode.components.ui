@@ -7,8 +7,9 @@ namespace Components;
   /**
    * Ui_Panel_Frame
    *
-   * @package net.evalcode.components
-   * @subpackage ui.panel
+   * @api
+   * @package net.evalcode.components.ui
+   * @subpackage panel
    *
    * @author evalcode.net
    */
