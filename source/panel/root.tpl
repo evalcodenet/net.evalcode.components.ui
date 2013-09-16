@@ -78,9 +78,9 @@
         window.debug=function(namespace_, message_, arg_)
         {
           if("undefined"==typeof(arg_))
-            console.warn("["+namespace_+"] "+message_);
+            console.debug("["+namespace_+"]", message_);
           else
-            console.warn("["+namespace_+"] "+message_, arg_);
+            console.debug("["+namespace_+"] "+message_, arg_);
         }
 
         window.profile_begin=function()
