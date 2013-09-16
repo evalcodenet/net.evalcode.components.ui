@@ -7,14 +7,14 @@ namespace Components;
   /**
    * Ui_Scriptlet_Image
    *
-   * @package net.evalcode.components
-   * @subpackage ui.scriptlet
+   * @package net.evalcode.components.ui
+   * @subpackage scriptlet
    *
    * @author evalcode.net
    */
   class Ui_Scriptlet_Image extends Http_Scriptlet
   {
-    // ACCESSORS/MUTATORS
+    // ACCESSORS
     /**
      * @param \Components\Io_Image $image_
      *
@@ -33,7 +33,7 @@ namespace Components;
     //--------------------------------------------------------------------------
 
 
-    // OVERRIDES/IMPLEMENTS
+    // OVERRIDES
     /**
      * @param \Components\Http_Scriptlet_Context $context_
      * @param \Components\Uri $uri_

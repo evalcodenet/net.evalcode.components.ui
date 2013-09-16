@@ -7,8 +7,9 @@ namespace Components;
   /**
    * Ui_Panel_Button
    *
-   * @package net.evalcode.components
-   * @subpackage ui.panel
+   * @api
+   * @package net.evalcode.components.ui
+   * @subpackage panel
    *
    * @author evalcode.net
    */
@@ -38,8 +39,9 @@ namespace Components;
   /**
    * Ui_Panel_Button_Submit
    *
-   * @package net.evalcode.components
-   * @subpackage ui.panel
+   * @api
+   * @package net.evalcode.components.ui
+   * @subpackage panel
    *
    * @author evalcode.net
    */

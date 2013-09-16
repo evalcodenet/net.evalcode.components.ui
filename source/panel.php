@@ -7,8 +7,8 @@ namespace Components;
   /**
    * Ui_Panel
    *
-   * @package net.evalcode.components
-   * @subpackage ui
+   * @api
+   * @package net.evalcode.components.ui
    *
    * @author evalcode.net
    *
@@ -38,8 +38,8 @@ namespace Components;
 
     // PROPERTIES
     /**
-    * @var \Components\Properties
-    */
+     * @var \Components\Properties
+     */
     public $params;
     /**
      * @var \Components\Ui_Panel_Session
@@ -439,8 +439,7 @@ namespace Components;
     }
 
     /**
-     * (non-PHPdoc)
-     * @see Components\Object::hashCode()
+     * @see Components\Object::hashCode() Components\Object::hashCode()
      */
     public function hashCode()
     {
@@ -448,8 +447,7 @@ namespace Components;
     }
 
     /**
-     * (non-PHPdoc)
-     * @see Components\Object::equals()
+     * @see Components\Object::equals() Components\Object::equals()
      */
     public function equals($object_)
     {
@@ -460,8 +458,7 @@ namespace Components;
     }
 
     /**
-     * (non-PHPdoc)
-     * @see Components\Object::__toString()
+     * @see Components\Object::__toString() Components\Object::__toString()
      */
     public function __toString()
     {
@@ -489,10 +486,9 @@ namespace Components;
     private $m_stylesheets=array();
     private $m_scripts=array();
     private $m_classes=array();
-
     /**
      * @var \Components\Ui_Panel
-    */
+     */
     private $m_parent;
     private $m_id;
     private $m_name;

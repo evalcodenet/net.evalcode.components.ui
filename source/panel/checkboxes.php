@@ -7,8 +7,9 @@ namespace Components;
   /**
    * Ui_Panel_Checkboxes
    *
-   * @package net.evalcode.components
-   * @subpackage ui.panel
+   * @api
+   * @package net.evalcode.components.ui
+   * @subpackage panel
    *
    * @author evalcode.net
    */
@@ -26,8 +27,7 @@ namespace Components;
 
     // INITIALIZATION
     /**
-     * (non-PHPdoc)
-     * @see \Components\Ui_Panel::init()
+     * @see \Components\Ui_Panel::init() \Components\Ui_Panel::init()
      */
     protected function init()
     {
@@ -40,10 +40,9 @@ namespace Components;
     //--------------------------------------------------------------------------
 
 
-    // OVERRIDES/IMPLEMENTS
+    // OVERRIDES
     /**
-     * (non-PHPdoc)
-     * @see \Components\Ui_Panel::getValue()
+     * @see \Components\Ui_Panel::getValue() \Components\Ui_Panel::getValue()
      */
     public function getValue()
     {
@@ -61,8 +60,7 @@ namespace Components;
 
 
     /**
-     * (non-PHPdoc)
-     * @see \Components\Ui_Panel::onRetrieveValue()
+     * @see \Components\Ui_Panel::onRetrieveValue() \Components\Ui_Panel::onRetrieveValue()
      */
     protected function onRetrieveValue()
     {
