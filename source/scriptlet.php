@@ -45,13 +45,14 @@ namespace Components;
       try
       {
         $content=parent::dispatch($context_, $uri_);
-
-        $exception=$response->getException();
       }
       catch(\Exception $e)
       {
         $exception=$e;
       }
+
+      if(null===$exception)
+        $exception=$response->getException();
 
       if($response->getMimetype()->isApplicationJson())
       {
