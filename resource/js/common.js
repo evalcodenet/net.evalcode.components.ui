@@ -39,12 +39,17 @@
     return ui_panel_bindings[formElementId_] && ui_panel_bindings[formElementId_][name_];
   }
   
-  function ui_panel_dump_debug(response_)
+  function ui_panel_dump_debug(dump_)
+  {
+    debug("ui/panel/common", "Components Debug Output", dump_);
+  }
+  
+  function ui_panel_dump_debug_header(response_)
   {
     var dump=response_.getResponseHeader("Components-Debug");
-
+    
     if(dump && 0<dump.length)
-      debug("ui/panel/common", "Components Debug Output", dump);
+      ui_panel_dump_debug(dump);
   }
 
   function ui_panel_raise_exception(exception_)
@@ -185,7 +190,7 @@
       {
         log("ui/panel/common", "Received response for ui/panel submission [panel: "+panelIdSubmitted_+", form: "+submittedFormName+"].", response);
 
-        ui_panel_dump_debug(response);
+        ui_panel_dump_debug_header(response);
 
         var responseText=response.responseText;
 
@@ -306,7 +311,7 @@
       {
         log("ui/panel/common", "Received response for ui/panel request [uri: "+uri_+"].", response);
   
-        ui_panel_dump_debug(response);
+        ui_panel_dump_debug_header(response);
         callbackJsResponse_(response);
       }
     );
