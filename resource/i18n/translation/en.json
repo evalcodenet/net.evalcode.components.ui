@@ -10,6 +10,7 @@
           "error":
           {
             "illegal_mimetype": "File type is not allowed [%1$s].",
+            "unsupported_mimetype": "File type is not supported [%1$s].",
             "unsupported_archive": "Archive type is not supported [%1$s]."
           }
         }

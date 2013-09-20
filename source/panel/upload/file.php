@@ -159,6 +159,17 @@ namespace Components;
     {
       $mimeType=$file_->getMimetype();
 
+      if(null===$mimeType)
+      {
+        $this->addError(I18n::translatef('ui/panel/upload/file/error/unknown_mimetype',
+          $file_->getName()
+        ));
+
+        $file_->delete();
+
+        return;
+      }
+
       if(!$this->isValidMimetype($mimeType) || !$this->isValidFileExtension($file_->getExtension()))
       {
         $this->addError(I18n::translatef('ui/panel/upload/file/error/illegal_mimetype',
@@ -370,7 +381,7 @@ namespace Components;
 
     /*private*/ static function status()
     {
-      return apc_fetch('upload_'.$_REQUEST[Ui_Panel::getSubmittedPanelId().'-file']);
+      return apc_fetch('apc_upload_'.$_REQUEST[Ui_Panel::getSubmittedPanelId().'-file']);
     }
 
     /*private*/ static function cleanup()

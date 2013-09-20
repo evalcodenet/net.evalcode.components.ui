@@ -10,6 +10,7 @@
           "error":
           {
             "illegal_mimetype": "文件类型不支持 [%1$s].",
+            "unsupported_mimetype": "文件类型不支持 [%1$s]."
             "unsupported_archive": "存档类型不支持 [%1$s]."
           }
         }
