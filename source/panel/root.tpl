@@ -2,10 +2,6 @@
 <script type="text/javascript">
   if("undefined"==typeof(window.ui_panel_root_id))
   {
-    <? if(Ui_Scriptlet::$transferSessionId): ?>
-      window.ui_panel_transfer_sid="<?= session_id(); ?>";
-    <? endif; ?>
-
     <? if(Ui_Scriptlet::$embedded): ?>
       window.ui_panel_route="<?= Environment::uriComponentsEmbedded('ui'); ?>";
     <? else: ?>

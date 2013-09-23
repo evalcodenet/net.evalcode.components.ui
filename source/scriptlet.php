@@ -27,10 +27,6 @@ namespace Components;
      * @var boolean
      */
     public static $embedded;
-    /**
-     * @var string
-     */
-    public static $transferSessionId;
     //--------------------------------------------------------------------------
 
 
@@ -87,17 +83,17 @@ namespace Components;
 
 
     // ACCESSORS
-    // TODO Implement ui/router for panel access.
+    // TODO [CSH] Implement ui/router for panel access.
     public function get()
     {
       $params=$this->request->getParams();
 
-      // TODO Not a submitted form or ajax request - Implement regular routing ...
+      // TODO [CSH] Not a submitted form or ajax request - Implement ui/router.
       if(false===$params->containsKey('ui-panel-submitted'))
       {
         if(__CLASS__!==get_class($this))
         {
-          // FIXME Session may still not be necessarily required / make lazy?
+          // TODO [CSH] Session may still not be necessarily required / make lazy.
           if(false===isset($_SESSION))
             session_start();
 
@@ -116,13 +112,6 @@ namespace Components;
         $submittedPanelId=$params->get('ui-panel-submitted')
       );
 
-      /**
-       * TODO Check & close possibilities to exploit this for
-       * i.e. session stealing hijacking.
-       */
-      if(!session_id() && $params->containsKey('ui-panel-sid'))
-        session_id($params->get('ui-panel-sid'));
-
       if($params->containsKey('ui-panel-callback'))
       {
         $callback=$params->get('ui-panel-callback');
@@ -132,7 +121,7 @@ namespace Components;
           $type=substr($callback, 0, $pos);
           $method=substr($callback, $pos+2);
 
-          // TODO Runtime_Classloader::lookupClass(class/name)
+          // TODO [CSH] Runtime_Classloader::lookupClass(class/name).
           if(class_exists($type) && method_exists($type, $method))
             return $type::$method();
         }
@@ -144,11 +133,11 @@ namespace Components;
       if(false===isset($_SESSION))
         session_start();
 
-      $redraw=null;
       $panels=array();
+      $redraw=null;
 
       /**
-       * TODO Either obsolete/remove with regular routing or implement
+       * TODO [CSH] Either obsolete/remove with regular routing or implement
        * a solution to selectively initialize requested/required panel(s) and
        * dependencies instead of whole panel tree.
        */
@@ -186,7 +175,7 @@ namespace Components;
       }
 
       /**
-       * FIXME (CSH) We need to support multiple redraw panels
+       * FIXME [CSH] We need to support multiple redraw panels
        * per request/response if we allow callbacks to selectively
        * request (sub-)panels.
        */
