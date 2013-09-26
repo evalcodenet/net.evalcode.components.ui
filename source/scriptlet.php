@@ -27,6 +27,10 @@ namespace Components;
      * @var boolean
      */
     public static $embedded;
+    /**
+     * @var boolean
+     */
+    public static $transferSessionId;
     //--------------------------------------------------------------------------
 
 
@@ -87,6 +91,9 @@ namespace Components;
     public function get()
     {
       $params=$this->request->getParams();
+
+      if($params->containsKey('ui-panel-sid'))
+        session_id($params->get('ui-panel-sid'));
 
       // TODO [CSH] Not a submitted form or ajax request - Implement ui/router.
       if(false===$params->containsKey('ui-panel-submitted'))

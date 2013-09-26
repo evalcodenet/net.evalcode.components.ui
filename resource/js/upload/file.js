@@ -53,6 +53,15 @@
     uiPanelCallback.value=TYPE_PANEL_UPLOAD_FILE+"::"+METHOD_PANEL_UPLOAD_FILE_UPLOAD;
     form.appendChild(uiPanelCallback);
 
+    if("undefined"!=typeof(ui_panel_transfer_sid))
+    {
+      var uiPanelSid=document.createElement("input");
+      uiPanelSid.type="hidden";
+      uiPanelSid.name="ui-panel-sid";
+      uiPanelSid.value=ui_panel_transfer_sid;
+      form.appendChild(uiPanelSid);
+    }
+
     form.appendChild(panelUpload.context);
 
     panelUpload.fadeOut(200);

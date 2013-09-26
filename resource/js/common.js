@@ -148,6 +148,10 @@
 
     parameters.push({"name": "ui-panel-form", "value": ui_panel_forms[0][submittedFormName]});
     parameters.push({"name": "ui-panel-submitted", "value": panelIdSubmitted_});
+
+    if("undefined"!=typeof(ui_panel_transfer_sid))
+      parameters.push({"name": "ui-panel-sid", "value": ui_panel_transfer_sid});
+
     if(callback_)
       parameters.push({"name": "ui-panel-callback", "value": callback_[0]+"::"+callback_[1]});
 
@@ -230,6 +234,9 @@
 
     var parameters=new Array();
 
+    if("undefined"!=typeof(ui_panel_transfer_sid))
+      parameters.push({"name": "ui-panel-sid", "value": ui_panel_transfer_sid});
+
     parameters.push({"name": "ui-panel-submitted", "value": panelIdSubmitable_});
     parameters.push({"name": "ui-panel-callback", "value": callbackType_+"::"+callbackMethod_});
 
@@ -284,6 +291,9 @@
     log("ui/panel/common", "Initiating ui/panel request [uri: "+uri_+"].", params_);
 
     var parameters=new Array();
+
+    if("undefined"!=typeof(ui_panel_transfer_sid))
+      parameters.push({"name": "ui-panel-sid", "value": ui_panel_transfer_sid});
 
     if("undefined"!=typeof(params_))
     {
