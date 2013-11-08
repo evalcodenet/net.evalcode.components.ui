@@ -35,7 +35,7 @@ namespace Components;
 
 
     // OVERRIDES
-    public function __call($name_, array $params_=array())
+    public function __call($name_, array $params_=[])
     {
       if(array_key_exists($name_, $this->m_members))
       {
@@ -106,7 +106,7 @@ namespace Components;
 
 
     // IMPLEMENTATION
-    private $m_members=array();
+    private $m_members=[];
     //--------------------------------------------------------------------------
   }
 ?>

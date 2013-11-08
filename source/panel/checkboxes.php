@@ -16,7 +16,7 @@ namespace Components;
   class Ui_Panel_Checkboxes extends Ui_Panel
   {
     // CONSTRUCTION
-    public function __construct($name_, $value_=null, $title_=null, array $options_=array())
+    public function __construct($name_, $value_=null, $title_=null, array $options_=[])
     {
       parent::__construct($name_, $value_, $title_);
 
@@ -55,7 +55,7 @@ namespace Components;
     /**
      * @var array|mixed
      */
-    protected $m_options=array();
+    protected $m_options=[];
     //-----
 
 
@@ -69,7 +69,7 @@ namespace Components;
 
       $params=$this->scriptlet->request->getParams();
 
-      $value=array();
+      $value=[];
       if($params->containsKey($this->getId()))
         $value=$params->get($this->getId());
 

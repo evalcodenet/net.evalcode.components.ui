@@ -21,7 +21,7 @@ namespace Components;
 
 
     // CONSTRUCTION
-    public function __construct($name_, $value_=null, $title_=null, array $options_=array())
+    public function __construct($name_, $value_=null, $title_=null, array $options_=[])
     {
       parent::__construct($name_, $value_, $title_);
 
@@ -44,7 +44,7 @@ namespace Components;
 
 
     // IMPLEMENTATION
-    protected $m_options=array();
+    protected $m_options=[];
     //--------------------------------------------------------------------------
   }
 ?>

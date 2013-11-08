@@ -193,7 +193,7 @@ namespace Components;
     // TODO Use components/type/hashmap#__toString().
     public function getAttributesAsString()
     {
-      $attributes=array();
+      $attributes=[];
 
       if(count($this->m_classes))
         $attributes[]='class="'.String::escapeHtml(implode(' ', $this->m_classes)).'"';
@@ -258,7 +258,7 @@ namespace Components;
       return $this->m_callbackJs;
     }
 
-    public function setCallbackJs($functionJs_, array $params_=array())
+    public function setCallbackJs($functionJs_, array $params_=[])
     {
       $this->m_callbackJs=array($functionJs_, $params_);
     }
@@ -292,7 +292,7 @@ namespace Components;
 
       $panel=$this;
 
-      $panelIds=array();
+      $panelIds=[];
       while($panel=$panel->m_parent)
       {
         $panelIds[]=$panel->m_id;
@@ -475,17 +475,17 @@ namespace Components;
 
     // IMPLEMENTATION
     private static $m_submittedPanelId;
-    private static $m_submittedPanelIds=array();
-    private static $m_forms=array();
+    private static $m_submittedPanelIds=[];
+    private static $m_forms=[];
 
-    private $m_attributes=array();
-    private $m_children=array();
-    private $m_errors=array();
-    private $m_triggerJs=array();
-    private $m_references=array();
-    private $m_stylesheets=array();
-    private $m_scripts=array();
-    private $m_classes=array();
+    private $m_attributes=[];
+    private $m_children=[];
+    private $m_errors=[];
+    private $m_triggerJs=[];
+    private $m_references=[];
+    private $m_stylesheets=[];
+    private $m_scripts=[];
+    private $m_classes=[];
     /**
      * @var \Components\Ui_Panel
      */
@@ -553,7 +553,7 @@ namespace Components;
       return $this->m_references;
     }
 
-    protected function addReference($name_, $tag_, $value_, array $attributes_=array())
+    protected function addReference($name_, $tag_, $value_, array $attributes_=[])
     {
       $this->m_references[$name_]=array($tag_, $value_, $attributes_);
     }
@@ -642,7 +642,7 @@ namespace Components;
       return $this->hasCallback();
     }
 
-    /*private*/ function callbackAjax(array $params_=array(), $callback_=null)
+    /*private*/ function callbackAjax(array $params_=[], $callback_=null)
     {
       if(null===$callback_)
         $callback_=$this->m_callback;
@@ -659,7 +659,7 @@ namespace Components;
       );
     }
 
-    /*private*/ function callbackJs(array $params_=array())
+    /*private*/ function callbackJs(array $params_=[])
     {
       if(null===$this->m_callbackJs)
         return null;
@@ -688,7 +688,7 @@ namespace Components;
       return 0<count($this->m_errors);
     }
 
-    /*private*/ function getErrors($includeSubPanels_=true, array &$errors_=array())
+    /*private*/ function getErrors($includeSubPanels_=true, array &$errors_=[])
     {
       if(0<count($this->m_errors))
         $errors_[$this->m_id]=array('panel'=>$this, 'errors'=>$this->m_errors);

@@ -118,7 +118,7 @@ namespace Components;
     {
       parent::remove($panel_);
 
-      $index=array();
+      $index=[];
       while($next=array_shift($this->m_index))
       {
         if($next===$panel_->getName())
@@ -143,7 +143,7 @@ namespace Components;
 
 
     // IMPLEMENTATION
-    private $m_index=array();
+    private $m_index=[];
     //-----
 
 

@@ -22,10 +22,10 @@ namespace Components;
       'application/zip'=>'\ZipArchive'
     );
 
-    public $fileExtensionsAllowed=array();
+    public $fileExtensionsAllowed=[];
     public $fileExtensionsForbidden=array('php', 'php3', 'php4', 'php5', 'phtml', 'phps', 'js', 'css');
 
-    public $mimeTypesAllowed=array();
+    public $mimeTypesAllowed=[];
     public $mimeTypesForbidden=array('application/x-php', 'application/x-php-source');
 
 
@@ -78,8 +78,8 @@ namespace Components;
 
 
     // IMPLEMENTATION
-    private $m_files=array();
-    private $m_fileActionsJs=array();
+    private $m_files=[];
+    private $m_fileActionsJs=[];
     //-----
 
 
@@ -103,7 +103,7 @@ namespace Components;
 
       $uploadPath=self::getUploadPath();
 
-      $this->m_files=array();
+      $this->m_files=[];
       $this->scanUploadPath($uploadPath, '', $this->m_files);
 
       if(($remove=$this->getRequestParam('remove')) && isset($this->m_files[$remove]))
@@ -235,7 +235,7 @@ namespace Components;
     // TEMPLATE METHODS
     /*private*/ function printFile(Io_File $file_, $subPath_, $mimeTypeIconSize_=Io_Mimetype::ICON_SIZE_64)
     {
-      $actions=array();
+      $actions=[];
 
       foreach($this->m_fileActionsJs as $name=>$action)
       {
@@ -361,7 +361,7 @@ namespace Components;
     // STATTC AJAX CALLBACKS
     /*private*/ static function upload()
     {
-      $failed=array();
+      $failed=[];
 
       foreach($_FILES as $key=>$file)
       {
