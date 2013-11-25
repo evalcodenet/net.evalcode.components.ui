@@ -16,6 +16,12 @@
   var ui_panel_disclosure=[];
   var ui_panel_bindings=[];
 
+  // DEBUG PROPERTIES
+  // FIXME Resolve from components/debug/appender/console.
+  var ui_panel_dump_debug_methods={1: "error", 2: "warn", 4: "debug"};
+  var ui_panel_dump_debug_styles={1: "color:red", 2: "color:yellow", 4: "color:blue"};
+
+
 
   // IMPLEMENTATION
   function ui_panel(formElementId_, name_, value_)
@@ -38,26 +44,90 @@
   {
     return ui_panel_bindings[formElementId_] && ui_panel_bindings[formElementId_][name_];
   }
-  
-  function ui_panel_dump_debug(dump_)
+
+  function ui_panel_dump_debug(method_, style_, hash_, file_, line_, args_)
   {
-    debug("ui/panel/common", "Components Debug Output", dump_);
-  }
-  
-  function ui_panel_dump_debug_header(response_)
-  {
-    var dump=response_.getResponseHeader("Components-Debug");
-    
-    if(dump && 0<dump.length)
-      ui_panel_dump_debug(dump);
+    console.group("%c[%s] %s:%s", style_, hash_, file_, line_);
+
+    for(var i=0; i<args_.length; i++)
+      console[method_]("%O", args_[i]);
+
+    console.groupEnd();
   }
 
-  function ui_panel_raise_exception(exception_)
+  function ui_panel_dump_exception(method_, style_, hash_, file_, line_, namespace_, message_, args_)
   {
-    if("string"==typeof(exception_))
-      exception_=eval("["+exception_+"]")[0];
+    console.groupCollapsed("%c%s", style_, message_);
+    console[method_]("[%s] %s\\n\\n%s:%s\\n\\n%s", namespace_, message_, file_, line_, args_);
+    console.groupEnd();
+  }
 
-    error(exception_.type, exception_.message, exception_);
+  function ui_panel_dump_debug_items(method_, style_, items_)
+  {
+    var count=items_.length;
+    var i=0;
+
+    for(var item in items_)
+    {
+      if(++i>count)
+        break;
+
+      if(items_[item][3]["stack"])
+        ui_panel_dump_exception(method_, style_, items_[item][0], items_[item][1], items_[item][2], items_[item][3]["namespace"], items_[item][3]["message"], items_[item][3]["stack"]);
+      else
+        ui_panel_dump_debug(method_, style_, items_[item][0], items_[item][1], items_[item][2], items_[item][3]);
+    }
+  }
+
+  function ui_panel_dump_debug_header(header_)
+  {
+    var json=header_.substring(header_.indexOf(": ")+1);
+    var dump=eval("["+json+"]")[0];
+
+    var count=dump.length;
+    var i=0;
+
+    for(var severity in dump)
+    {
+      if(++i>count)
+        break;
+
+      ui_panel_dump_debug_items(
+        ui_panel_dump_debug_methods[severity],
+        ui_panel_dump_debug_styles[severity],
+        dump[severity]
+      );
+    }
+  }
+
+  function ui_panel_dump_exception_header(header_)
+  {
+    var json=header_.substring(header_.indexOf(": ")+1);
+    var exception=eval("["+json+"]")[0];
+
+    ui_panel_dump_exception(
+      "error", 
+      "color:red", 
+      exception[0],
+      exception[1],
+      exception[2],
+      exception[3]["namespace"], 
+      exception[3]["message"], 
+      exception[3]["stack"]
+    );
+  }
+
+  function ui_panel_dump_debug_headers(response_)
+  {
+    var headers=response_.getAllResponseHeaders().split("\n");
+
+    for(idx=0; idx<headers.length; idx++)
+    {
+      if(-1<headers[idx].indexOf("Components-Debug-"))
+        ui_panel_dump_debug_header(headers[idx]);
+      else if(-1<headers[idx].indexOf("Components-Exception-"))
+        ui_panel_dump_exception_header(headers[idx]);
+    }
   }
 
   function ui_panel_form_name(anyFormElement_)
@@ -161,6 +231,9 @@
         parameters.push({"name": panelIdSubmitted_+"-"+param, "value": params_[param]});
     }
 
+    if(ui_panel_debug)
+      parameters.push({"name": "debug", "value": ui_panel_debug_verbosity});
+
     var request=jQuery.ajaxSetup({
       type: "POST",
       url: ui_panel_get_route(),
@@ -191,7 +264,7 @@
       {
         log("ui/panel/common", "Received response for ui/panel submission [panel: "+panelIdSubmitted_+", form: "+submittedFormName+"].", response);
 
-        ui_panel_dump_debug_header(response);
+        ui_panel_dump_debug_headers(response);
 
         var responseText=response.responseText;
 
@@ -208,12 +281,7 @@
           responseObject=responseObject[0];
 
         if(responseObject)
-        {
-          if(responseObject.exception)
-            ui_panel_raise_exception(responseObject.exception);
-          
           ui_panel_redraw(responseObject);
-        }
 
         if(trigger_ && trigger_[TRIGGER_ON_RESPONSE])
         {
@@ -257,6 +325,8 @@
       {
         log("ui/panel/common", "Received response for static ui/panel callback submission [panel: "+panelIdSubmitable_+"].", response);
 
+        ui_panel_dump_debug_headers(response);
+
         var responseText=response.responseText;
 
         try
@@ -272,16 +342,9 @@
           responseObject=responseObject[0];
 
         if(responseObject)
-        {
-          if(responseObject.exception)
-            ui_panel_raise_exception(responseObject.exception);
-
           callbackJsResponse_(responseObject);
-        }
         else
-        {
           callbackJsResponse_(responseText);
-        }
       }
     );
   }
@@ -301,6 +364,9 @@
         parameters.push({"name": param, "value": params_[param]});
     }
 
+    if(ui_panel_debug)
+      parameters.push({"name": "debug", "value": ui_panel_debug_verbosity});
+
     jQuery.ajaxSetup({
       type: "POST",
       url: uri_,
@@ -312,7 +378,8 @@
       {
         log("ui/panel/common", "Received response for ui/panel request [uri: "+uri_+"].", response);
   
-        ui_panel_dump_debug_header(response);
+        ui_panel_dump_debug_headers(response);
+
         callbackJsResponse_(response);
       }
     );

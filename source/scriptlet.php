@@ -40,47 +40,34 @@ namespace Components;
       $response=$context_->getResponse();
 
       $content=null;
-      $exception=null;
 
       try
       {
         $content=parent::dispatch($context_, $uri_);
       }
+      catch(Http_Exception $e)
+      {
+        if(Environment::isCli())
+          throw $e;
+
+        $e->log();
+        $e->sendHeader();
+      }
       catch(\Exception $e)
       {
-        $exception=$e;
+        Runtime::addException($e);
       }
-
-      if(null===$exception)
-        $exception=$response->getException();
 
       if($response->getMimetype()->isApplicationJson())
       {
         $parameters=$response->getParameters();
         $parameters['content']=$content;
 
-        if(null!==$exception)
-        {
-          // Only log and indicate an exception for AJAX requests ..
-          exception_log($exception);
-
-          Http_Exception::sendHeaderInternalError();
-
-          // .. yet admin/development access should see more details
-          if(Runtime::isManagementAccess())
-            $parameters['exception']=exception_as_json($exception);
-
-          $response->unsetException();
-        }
-
-        echo json_encode(array($parameters));
+        echo json_encode([$parameters]);
       }
       else
       {
         echo $content;
-
-        if(null!==$exception)
-          throw $exception;
       }
     }
     //--------------------------------------------------------------------------

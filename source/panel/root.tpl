@@ -14,6 +14,7 @@
 
     window.ui_panel_root_id="<?= $this->id(); ?>";
     window.ui_panel_debug=<? if(Debug::active()): ?>true<? else: ?>false<? endif; ?>;
+    window.ui_panel_debug_verbosity=<? if(Debug::active()): ?><?= Debug::verbosity(); ?><? else: ?><?= Debug::ERROR; ?><? endif; ?>;
     window.ui_panel_forms=[];
     window.ui_panel_scripts=[];
     window.ui_panel_stylesheets=[];

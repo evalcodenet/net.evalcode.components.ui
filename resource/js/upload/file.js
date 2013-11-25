@@ -18,7 +18,7 @@
     var panelUploadProgress=jQuery("#"+panelIdUpload+"-progress");
     var panelUploadProgressInner=panelUploadProgress.children("div");
     var panelUploadProgressLabel=panelUploadProgressInner.children("div");
-    
+
     var fileName=panelUpload.context.files[0].name;
 
     var container=document.createElement("div");
