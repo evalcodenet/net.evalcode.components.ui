@@ -49,8 +49,11 @@
   {
     console.group("%c[%s] %s:%s", style_, hash_, file_, line_);
 
-    for(var i=0; i<args_.length; i++)
-      console[method_]("%O", args_[i]);
+    if(args_ && 0<args_.length)
+    {
+      for(var i=0; i<args_.length; i++)
+        console[method_]("%O", args_[i]);
+    }
 
     console.groupEnd();
   }
@@ -72,7 +75,7 @@
       if(++i>count)
         break;
 
-      if(items_[item][3]["stack"])
+      if(items_[item][3] && items_[item][3]["stack"])
         ui_panel_dump_exception(method_, style_, items_[item][0], items_[item][1], items_[item][2], items_[item][3]["namespace"], items_[item][3]["message"], items_[item][3]["stack"]);
       else
         ui_panel_dump_debug(method_, style_, items_[item][0], items_[item][1], items_[item][2], items_[item][3]);

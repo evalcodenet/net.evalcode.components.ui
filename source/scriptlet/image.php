@@ -14,7 +14,7 @@ namespace Components;
    */
   class Ui_Scriptlet_Image extends Http_Scriptlet
   {
-    // ACCESSORS
+    // ACCESSORS/MUTATORS
     /**
      * @param \Components\Io_Image $image_
      *
@@ -30,10 +30,25 @@ namespace Components;
 
       return Uri::valueOf(Environment::uriComponents('ui', 'image', "$key.$extension"));
     }
+
+    /**
+     * @param string $image_
+     *
+     * @return \Components\Uri
+     */
+    public static function uriForPath($image_)
+    {
+      $extension=Io::fileExtension($image_);
+      $key=md5($image_);
+
+      Cache::set($key, $image_);
+
+      return Environment::uriComponents('ui', 'image', "$key.$extension");
+    }
     //--------------------------------------------------------------------------
 
 
-    // OVERRIDES
+    // OVERRIDES/IMPLEMENTS
     /**
      * @param \Components\Http_Scriptlet_Context $context_
      * @param \Components\Uri $uri_
