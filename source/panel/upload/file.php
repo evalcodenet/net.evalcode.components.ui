@@ -45,7 +45,7 @@ namespace Components;
       parent::init();
 
       $this->addStylesheet('ui/upload/file');
-      $this->addStylesheet('/io/resource/css/mimetype.css');
+      $this->addStylesheet('/resource/io/css/mimetype.css');
 
       $this->addScript('ui/upload/file');
 

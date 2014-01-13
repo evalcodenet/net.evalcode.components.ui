@@ -529,7 +529,7 @@ namespace Components;
         $chunks=explode('/', $name_);
         $ns=array_shift($chunks);
 
-        $name_='/'.$ns.'/resource/js/'.implode('/', $chunks).'.js';
+        $name_='/resource/'.$ns.'/js/'.implode('/', $chunks).'.js';
       }
 
       $this->m_scripts[$name_]=array('condition'=>$conditionJs_, 'callback'=>$callbackJsOnLoad_);
@@ -542,7 +542,7 @@ namespace Components;
         $chunks=explode('/', $name_);
         $ns=array_shift($chunks);
 
-        $name_='/'.$ns.'/resource/css/'.implode('/', $chunks).'.css';
+        $name_='/resource/'.$ns.'/css/'.implode('/', $chunks).'.css';
       }
 
       $this->m_stylesheets[$name_]=$media_;

@@ -54,11 +54,11 @@ namespace Components;
       $this->tabs->add(new Ui_Panel_Text('text', null, 'Text'));
       $this->tabs->add(new Ui_Panel_Image('image', Io_Image::valueOf(Environment::pathApplication().'/favicon.ico'), 'Image'));
       $this->tabs->add(new Ui_Panel_Upload_File('file', null, 'File'));
-      $this->tabs->add(new Ui_Panel_Select('list', null, 'List', array('A', 'B', 'C')));
+      $this->tabs->add(new Ui_Panel_Select('list', null, 'List', ['A', 'B', 'C']));
       $this->tabs->add(new Ui_Panel_Html('html', null, 'HTML'));
 
       $button=new Ui_Panel_Button('submit', null, 'Submit');
-      $button->setCallback(array($this, 'onSubmit'));
+      $button->setCallback([$this, 'onSubmit']);
 
       $this->add($button);
     }

@@ -86,6 +86,7 @@ namespace Components;
 
         if($this->embedded)
         {
+          die('embed');
           $this->setAttribute('src', sprintf('data:%s;base64,%s',
             $image->getMimetype(),
             $image->getBase64()
