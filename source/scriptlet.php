@@ -45,17 +45,18 @@ namespace Components;
       {
         $content=parent::dispatch($context_, $uri_);
       }
-      catch(Http_Exception $e)
+      catch(\Exception $e)
       {
         if(Environment::isCli())
           throw $e;
 
-        $e->log();
-        $e->sendHeader();
-      }
-      catch(\Exception $e)
-      {
         Runtime::addException($e);
+
+        if($e instanceof Http_Exception)
+        {
+          $e->log();
+          $e->sendHeader();
+        }
       }
 
       if($response->getMimetype()->isApplicationJson())
@@ -99,7 +100,7 @@ namespace Components;
           return $engine->render(__DIR__.'/scriptlet.tpl');
         }
 
-        throw Http_Exception::notFound('ui/scriptlet');
+        throw new Http_Exception('ui/scriptlet', null, Http_Exception::NOT_FOUND);
       }
 
       Ui_Panel::setSubmittedPanelId(
@@ -122,12 +123,12 @@ namespace Components;
       }
 
       if(false===$params->containsKey('ui-panel-form') || !($form=$params->get('ui-panel-form')))
-        throw Http_Exception::notFound('ui/scriptlet');
+        throw new Http_Exception('ui/scriptlet', null, Http_Exception::NOT_FOUND);
 
       if(false===isset($_SESSION))
         session_start();
 
-      $panels=array();
+      $panels=[];
       $redraw=null;
 
       /**

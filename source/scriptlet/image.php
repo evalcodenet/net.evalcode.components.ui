@@ -58,7 +58,7 @@ namespace Components;
       $key=$uri_->getFilename();
 
       if(!$path=Cache::get($key))
-        throw Http_Exception::notFound('ui/scriptlet/image', 'Requested image can not be found.');
+        throw new Http_Exception('ui/scriptlet/image', null, Http_Exception::NOT_FOUND);
 
       // TODO Cache headers.
       readfile($path);
