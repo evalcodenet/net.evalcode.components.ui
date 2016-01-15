@@ -27,10 +27,13 @@ namespace Components;
     {
       parent::init();
 
-      $this->setTemplate(__DIR__.'/button.tpl');
+      $this->tag=null;
+      $this->template=__DIR__.'/button.tpl';
 
-      $this->setAttribute('type', self::TYPE_PLAIN);
-      $this->setAttribute('value', $this->getTitle());
+      $this->attribute('type', self::TYPE_PLAIN);
+      $this->attribute('value', $this->title);
+
+      $this->addClass('ui_panel_button');
     }
     //--------------------------------------------------------------------------
   }
@@ -52,7 +55,9 @@ namespace Components;
     {
       parent::init();
 
-      $this->setAttribute('type', self::TYPE_SUBMIT);
+      $this->attribute('type', self::TYPE_SUBMIT);
+
+      $this->addClass('ui_panel_button_submit');
     }
     //--------------------------------------------------------------------------
   }

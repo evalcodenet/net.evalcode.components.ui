@@ -1,25 +1,21 @@
-<? if($this->self->alwaysShowTabBar || 1<count($tabs=$this->panels)): ?>
-  <ul class="ui_panel_tab_labels">
-    <? $i=0; ?>
-    <? foreach($tabs as $tab): ?>
-      <? $idx=$this->tabIndex($tab); ?>
-      <li id="<?= $this->id; ?>-label-<?= $idx; ?>" class="ui_panel_tab_label ui_panel_tab_label_<?= $idx; ?> ui_panel_tab_label_<? if(0===$i%2): ?>even<? else: ?>odd<? endif; ?><? if($this->isActiveTab($tab)): ?> active<? endif; ?>">
-        <a href="javascript:void(0);" onclick="ui_panel_tab_activate('<?= $this->id; ?>', <?= $idx; ?>, <? if($this->hasCallbackJs()): ?><?= strtr(json_encode($this->self->getCallbackJs()), '"', "'"); ?><? else: ?>null<? endif; ?>);"><?= $tab->getTitle(); ?></a>
-      </li>
-      <? $i++; ?>
-    <? endforeach; ?>
-    <li class="clear"></li>
-  </ul>
-<? endif; ?>
-<ul class="ui_panel_tab_contents">
-  <? $j=0; ?>
+<? namespace Components; ?>
+<? /* @var $self \Components\Ui_Panel_Tabs */ ?>
+<ul class="ui_panel_tabs labels<? if(false===$self->alwaysShowTabBar && 1>count($tabs=$self->panels())): ?> gone<? endif; ?>">
   <? foreach($tabs as $tab): ?>
-    <? $idx=$this->tabIndex($tab); ?>
-    <li id="<?= $this->id; ?>-content-<?= $idx; ?>" class="ui_panel_tab_content ui_panel_tab_content_<?= $idx; ?> ui_panel_tab_content_<? if(0===$j%2): ?>even<? else: ?>odd<? endif; ?><? if($this->isActiveTab($tab)): ?> active<? endif; ?>">
-      <?= $tab->display(); ?>
+    <? $idx=$self->index($tab); ?>
+    <li class="ui_panel_tabs label idx_<?= $idx; ?> <? if(0===$idx%2): ?>even<? else: ?>odd<? endif; ?><? if($self->isActive($tab)): ?> active<? endif; ?>">
+      <a rel="<?= $idx; ?>"><?= $tab->title; ?></a>
     </li>
-    <? $j++; ?>
   <? endforeach; ?>
   <li class="clear"></li>
 </ul>
-<input type="hidden" value="<?= (null===($value=$this->value()))?0:$value; ?>" name="<?= $this->id; ?>" id="<?= $this->id; ?>-value"/>
+<ul class="ui_panel_tabs contents">
+  <? foreach($tabs as $tab): ?>
+    <? $idx=$self->index($tab); ?>
+    <li id="<?= $self->id(); ?>-<?= $idx; ?>" class="ui_panel_tabs content idx_<?= $idx; ?> <? if(0===$idx%2): ?>even<? else: ?>odd<? endif; ?><? if($self->isActive($tab)): ?> active<? endif; ?>">
+      <?= $tab->display(); ?>
+    </li>
+  <? endforeach; ?>
+  <li class="clear"></li>
+</ul>
+<input type="hidden" id="<?= $self->id(); ?>-value" name="<?= $self->id(); ?>" value="<?= $self->value(); ?>"/>

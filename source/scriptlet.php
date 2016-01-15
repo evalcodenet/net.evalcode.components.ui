@@ -18,23 +18,39 @@ namespace Components;
     /**
      * @var string
      */
+    public static $submittedPanelId;
+    /**
+     * @var string
+     */
+    public static $transactionId;
+
+    /**
+     * @var string
+     */
     public $title;
     /**
      * @var \Components\Ui_Panel
      */
     public $panel;
     /**
-     * @var boolean
+     * @var string
      */
-    public static $embedded;
+    public $template;
     /**
-     * @var boolean
+     * @var string[]
      */
-    public static $transferSessionId;
+    public $scripts=[];
+    /**
+     * @var string[]
+     */
+    public $styles=[];
     //--------------------------------------------------------------------------
 
 
     // STATIC ACCESSORS
+    /**
+     * @see \Components\Http_Scriptlet::dispatch() dispatch
+     */
     public static function dispatch(Http_Scriptlet_Context $context_, Uri $uri_)
     {
       $response=$context_->getResponse();
@@ -43,70 +59,245 @@ namespace Components;
 
       try
       {
-        $content=parent::dispatch($context_, $uri_);
+        // FIXME Temporary fix - create a explicit route for ui/scriptlet/embedded.
+        if(Environment::isEmbedded())
+        {
+          $scriptlet=new Ui_Scriptlet_Embedded();
+          $scriptlet->request=$context_->getRequest();
+          $scriptlet->response=$context_->getResponse();
+
+          $method=$scriptlet->request->getMethod();
+
+          if(false===method_exists($scriptlet, strtolower($method)))
+            throw new Http_Exception('ui/scriptlet', null, Http_Exception::NOT_FOUND);
+
+          $content=$scriptlet->$method();
+        }
+        else
+        {
+          $content=parent::dispatch($context_, $uri_);
+        }
       }
       catch(\Exception $e)
       {
-        if(Environment::isCli())
-          throw $e;
-
         Runtime::addException($e);
 
         if($e instanceof Http_Exception)
-        {
-          $e->log();
           $e->sendHeader();
-        }
       }
 
-      if($response->getMimetype()->isApplicationJson())
-      {
-        $parameters=$response->getParameters();
-        $parameters['content']=$content;
+      echo $content;
+    }
 
-        echo json_encode([$parameters]);
-      }
-      else
-      {
-        echo $content;
-      }
+    /**
+     * @return string
+     */
+    public static function transactionId()
+    {
+      if(!self::$transactionId)
+        self::$transactionId=\math\random_sha1_weak();
+
+      return self::$transactionId;
     }
     //--------------------------------------------------------------------------
 
 
-    // ACCESSORS
-    // TODO [CSH] Implement ui/router for panel access.
+    // ACCESSORS/MUTATORS
+    /**
+     * @return string
+     */
+    public function post()
+    {
+      return $this->dispatchImpl();
+    }
+
+    /**
+     * @return string
+     */
     public function get()
     {
+      return $this->dispatchImpl();
+    }
+
+    /**
+     * @param string $name_
+     * @param boolean $async_
+     *
+     * @return boolean
+     */
+    public function script($name_, $async_=true, $defer_=false)
+    {
+      if(0===strpos($name_, '/'))
+        return false;
+
+      $chunks=explode('/', $name_);
+      $ns=array_shift($chunks);
+
+      $uri=Environment::uriComponentsResource($ns.'/js/'.implode('/', $chunks).'.js');
+
+      $options=[];
+      $options['src']=$uri;
+
+      if($defer_)
+        $options['defer']='defer';
+      if($async_)
+        $options['async']='async';
+
+      $this->scripts[$uri]=$options;
+
+      return true;
+    }
+
+    /**
+     * @param string $name_
+     * @param string $media_
+     *
+     * @return boolean
+     */
+    public function style($name_, $media_='all')
+    {
+      if(0===strpos($name_, '/'))
+        return false;
+
+      $chunks=explode('/', $name_);
+      $ns=array_shift($chunks);
+
+      $uri=Environment::uriComponentsResource($ns.'/css/'.implode('/', $chunks).'.css');
+
+      $options=[];
+      $options['href']=$uri;
+      $options['media']=$media_;
+
+      $this->styles[$uri]=$options;
+
+      return true;
+    }
+
+    /**
+     * @return string
+     */
+    public function fetch()
+    {
+      $engine=new Ui_Template();
+      $engine->self=$this;
+
+      return $engine->render($this->template);
+    }
+
+    /**
+     * @return string
+     */
+    public function display()
+    {
+      $engine=new Ui_Template();
+      $engine->self=$this;
+
+      $engine->display($this->template);
+    }
+
+    /**
+     * @return void
+     */
+    public function printReferences()
+    {
+      $print=function($pattern_, $attributes_)
+      {
+        $attributes='';
+        foreach($attributes_ as $name=>$value)
+          $attributes.=" $name=\"$value\"";
+
+        printf($pattern_, $attributes);
+      };
+
+      foreach($this->scripts as $script=>$attributes)
+        $print("<script type=\"text/javascript\"%s></script>", $attributes);
+      foreach($this->styles as $stylesheet=>$attributes)
+        $print("<link type=\"text/css\" rel=\"stylesheet\"%s/>", $attributes);
+    }
+    //--------------------------------------------------------------------------
+
+
+    // OVERRIDES/IMPLEMENTS
+    /**
+     * @see Components\Object::equals() equals
+     */
+    public function equals($object_)
+    {
+      if($object_ instanceof self)
+        return $this->hashCode()===$object_->hashCode();
+
+      return false;
+    }
+
+    /**
+     * @see Components\Object::hashCode() hashCode
+     */
+    public function hashCode()
+    {
+      return \math\hasho($this);
+    }
+
+    /**
+     * @see Components\Object::__toString() __toString
+     */
+    public function __toString()
+    {
+      return sprintf('%s@%s{}', __CLASS__, $this->hashCode());
+    }
+    //--------------------------------------------------------------------------
+
+
+    // IMPLEMENTATION
+    protected function init()
+    {
+      $this->template=__DIR__.'/scriptlet.tpl';
+
+      // Override for router-free ui/panel dispatch.
+      $this->script('ui/jquery/jquery-1.11.2.min', false, false);
+      $this->script('runtime/libstd');
+
+      $this->script('ui/jquery/mobile/jquery.mobile.touch.min');
+
+      $this->script('ui/common');
+      $this->style('ui/common');
+
+      $this->panel=new Ui_Panel('ui-panel');
+      $this->panel->scriptlet=$this;
+    }
+
+
+    /**
+     * @return \Components\Ui_Panel[]
+     */
+    // TODO [CSH] Implement ui/router for panel access.
+    protected function dispatchImpl()
+    {
+      $isHtml=$this->response->getMimetype()->isHtml();
+
       $params=$this->request->getParams();
 
-      if($params->containsKey('ui-panel-sid'))
-        session_id($params->get('ui-panel-sid'));
+      if(!self::$transactionId=$params->get('ui-panel-tx'))
+        self::$transactionId=\math\random_sha1_weak();
 
-      // TODO [CSH] Not a submitted form or ajax request - Implement ui/router.
-      if(false===$params->containsKey('ui-panel-submitted'))
+      self::$submittedPanelId=$params->get('ui-panel-submitted');
+
+      if(__CLASS__!==get_class($this))
       {
-        if(__CLASS__!==get_class($this))
-        {
-          // TODO [CSH] Session may still not be necessarily required / make lazy.
-          if(false===isset($_SESSION))
-            session_start();
+        $this->init();
 
-          $this->init();
+        if($isHtml)
+          return $this->fetch();
 
-          $engine=new Ui_Template();
-          $engine->self=$this;
+        $panels=[];
 
-          return $engine->render(__DIR__.'/scriptlet.tpl');
-        }
+        foreach($this->panel->redrawPanels() as $panel)
+          $panels[$panel->id()]=$panel->fetch();
 
-        throw new Http_Exception('ui/scriptlet', null, Http_Exception::NOT_FOUND);
+        return json_encode(['p'=>$panels]);
       }
 
-      Ui_Panel::setSubmittedPanelId(
-        $submittedPanelId=$params->get('ui-panel-submitted')
-      );
 
+      // static callback
       if($params->containsKey('ui-panel-callback'))
       {
         $callback=$params->get('ui-panel-callback');
@@ -121,114 +312,6 @@ namespace Components;
             return $type::$method();
         }
       }
-
-      if(false===$params->containsKey('ui-panel-form') || !($form=$params->get('ui-panel-form')))
-        throw new Http_Exception('ui/scriptlet', null, Http_Exception::NOT_FOUND);
-
-      if(false===isset($_SESSION))
-        session_start();
-
-      $panels=[];
-      $redraw=null;
-
-      /**
-       * TODO [CSH] Either obsolete/remove with regular routing or implement
-       * a solution to selectively initialize requested/required panel(s) and
-       * dependencies instead of whole panel tree.
-       */
-      $form=json_decode($form);
-
-      $i=0;
-      foreach($form as $name=>$type)
-      {
-        $type=String::pathToType($type);
-
-        if(0===$i)
-        {
-          $this->panel=$panels[$i]=new $type($name);
-          $this->panel->scriptlet=$this;
-        }
-        else
-        {
-          if(isset($panels[$i-1]->$name))
-            $panels[$i]=$panels[$i-1]->$name;
-          else
-            $panels[$i-1]->add($panels[$i]=new $type($name));
-        }
-
-        if(null===$redraw && $panels[$i]->redraw())
-          $redraw=$panels[$i];
-
-        $i++;
-      }
-
-      if(null!==$redraw)
-      {
-        $this->response->addParameter('redraw', $redraw->getId());
-
-        return $redraw->fetch();
-      }
-
-      /**
-       * FIXME [CSH] We need to support multiple redraw panels
-       * per request/response if we allow callbacks to selectively
-       * request (sub-)panels.
-       */
-      foreach(end($panels)->getPanels() as $panel)
-      {
-        if($panel->redraw())
-        {
-          $this->response->addParameter('redraw', $panel->getId());
-
-          return $panel->fetch();
-        }
-      }
-    }
-
-    public function post()
-    {
-      return $this->get();
-    }
-    //--------------------------------------------------------------------------
-
-
-    // OVERRIDES
-    /**
-     * @see Components\Object::equals() Components\Object::equals()
-     */
-    public function equals($object_)
-    {
-      if($object_ instanceof self)
-        return $this->hashCode()===$object_->hashCode();
-
-      return false;
-    }
-
-    /**
-     * @see Components\Object::hashCode() Components\Object::hashCode()
-     */
-    public function hashCode()
-    {
-      return object_hash($this);
-    }
-
-    /**
-     * @see Components\Object::__toString() Components\Object::__toString()
-     */
-    public function __toString()
-    {
-      return sprintf('%s@%s{}', __CLASS__, $this->hashCode());
-    }
-    //--------------------------------------------------------------------------
-
-
-    // IMPLEMENTATION
-    protected function init()
-    {
-      $this->panel=new Ui_Panel_Root('ui-panel');
-      $this->panel->scriptlet=$this;
-
-      // Override for router-free ui/panel dispatch.
     }
     //--------------------------------------------------------------------------
   }

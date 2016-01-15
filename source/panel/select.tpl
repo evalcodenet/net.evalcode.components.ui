@@ -1,8 +1,10 @@
-<select id="<?= $this->id; ?>" name="<?= $this->id; ?>"<? if($this->hasCallbackJs()): ?> onchange="<?= $this->callbackJs(); ?>"<? elseif($this->hasCallbackAjax()): ?> onchange="<?= $this->callbackAjax(); ?>"<? endif; ?> <?= $this->attributes(); ?>>
-  <? if(null!==$this->self->emptyOptionTitle): ?>
-    <option value=""<? if(null===$this->value()): ?> selected="selected"<? endif; ?>><?= \Components\String::escapeHtml($this->self->emptyOptionTitle); ?></option>
+<? namespace Components; ?>
+<? /* @var $self \Components\Ui_Panel_Select */ ?>
+<select id="<?= $self->id(); ?>" name="<?= $self->id(); ?>"<? if($self->callback): ?> onchange="<?= $self->callback(); ?>"<? endif; ?> <?= $self->attributes(); ?>>
+  <? if(null!==$self->emptyOptionTitle): ?>
+    <option value=""<? if(null===$self->value()): ?> selected="selected"<? endif; ?>><?= \html\escape($self->emptyOptionTitle); ?></option>
   <? endif; ?>
-  <? foreach($this->params->options as $value=>$title): ?>
-    <option value="<?= $value; ?>"<? if($this->value()==$value): ?> selected="selected"<? endif; ?>><?= \Components\String::escapeHtml($title); ?></option>
+  <? foreach($self->options as $value=>$title): ?>
+    <option value="<?= $value; ?>"<? if($self->value()==$value): ?> selected="selected"<? endif; ?>><?= \html\escape($title); ?></option>
   <? endforeach; ?>
 </select>

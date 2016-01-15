@@ -20,8 +20,10 @@ namespace Components;
     {
       parent::init();
 
-      $this->addStylesheet('ui/html');
-      $this->addScript('ui/html', null, 'ui_panel_html_init("'.$this->getId().'");');
+      $this->tag='div';
+      $this->template=__DIR__.'/html.tpl';
+
+      $this->addClass('ui_panel_html');
     }
     //--------------------------------------------------------------------------
   }

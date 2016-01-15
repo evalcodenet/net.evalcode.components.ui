@@ -1,3 +1,3 @@
-<input type="<?= $this->self->type; ?>" id="<?= $this->id; ?>"
-  <? if($this->hasCallbackJs()): ?> onchange="<?= $this->callbackJs(); ?>"<? elseif($this->hasCallbackAjax()): ?> onchange="<?= $this->callbackAjax(); ?>"<? endif; ?>
-  name="<?= $this->id; ?>" value="<?= \Components\String::escapeHtml($this->value()); ?>"<?= $this->attributes(); ?>/>
+<? namespace Components; ?>
+<? /* @var $self \Components\Ui_Panel_Input */ ?>
+<input type="<?= $self->type; ?>" id="<?= $self->id(); ?>"<? if($self->callback): ?> onchange="<?= $self->callback(); ?>"<? endif; ?> name="<?= $self->id(); ?>" value="<?= \html\escape($self->value()); ?>"<?= $self->attributes(); ?>/>

@@ -4,7 +4,7 @@
 namespace Components;
 
 
-/**
+  /**
    * Ui_Panel_Input
    *
    * @api
@@ -49,8 +49,9 @@ namespace Components;
       parent::init();
 
       $this->tag=null;
+      $this->template=__DIR__.'/input.tpl';
 
-      $this->setTemplate(__DIR__.'/input.tpl');
+      $this->addClass('ui_panel_input');
     }
     //--------------------------------------------------------------------------
   }
@@ -88,7 +89,7 @@ namespace Components;
     //--------------------------------------------------------------------------
 
 
-    // ACCESSORS
+    // ACCESSORS/MUTATORS
     /**
      * @param string $name_
      * @param string $value_
@@ -107,11 +108,11 @@ namespace Components;
 
 
     // IMPLEMENTATION
-    private static $m_types=array(
+    private static $m_types=[
       'HIDDEN',
       'IMAGE',
       'TEXT'
-    );
+    ];
     //--------------------------------------------------------------------------
   }
 ?>

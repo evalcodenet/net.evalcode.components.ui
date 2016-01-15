@@ -14,7 +14,22 @@ namespace Components;
    */
   class Ui_Template implements Object
   {
-    // ACCESSORS
+    // ACCESSORS/MUTATORS
+    /**
+     * Displays template for given path.
+     *
+     * @param string $templatePath_
+     */
+    public function display($templatePath_)
+    {
+      extract($this->m_members);
+
+      if(isset($this->m_members['self']))
+        $self=$this->m_members['self'];
+
+      include $templatePath_;
+    }
+
     /**
      * Renders template for given path and returns rendered contents.
      *
@@ -27,6 +42,10 @@ namespace Components;
       ob_start();
 
       extract($this->m_members);
+
+      if(isset($this->m_members['self']))
+        $self=$this->m_members['self'];
+
       include $templatePath_;
 
       return ob_get_clean();
@@ -34,24 +53,24 @@ namespace Components;
     //--------------------------------------------------------------------------
 
 
-    // OVERRIDES
+    // OVERRIDES/IMPLEMENTS
     public function __call($name_, array $params_=[])
     {
-      if(array_key_exists($name_, $this->m_members))
-      {
-        if(is_callable($this->m_members[$name_]))
-          return call_user_func_array($this->m_members[$name_], $params_);
+      if(false===isset($this->m_members[$name_]))
+        return null;
 
-        return $this->m_members[$name_];
-      }
+      if(is_callable($this->m_members[$name_]))
+        return call_user_func_array($this->m_members[$name_], $params_);
+
+      return $this->m_members[$name_];
     }
 
     public function __get($name_)
     {
-      if(array_key_exists($name_, $this->m_members))
-        return $this->m_members[$name_];
+      if(false===isset($this->m_members[$name_]))
+        return null;
 
-      return null;
+      return $this->m_members[$name_];
     }
 
     public function __set($name_, $value_)
@@ -77,15 +96,15 @@ namespace Components;
     }
 
     /**
-     * @see Components\Object::hashCode() Components\Object::hashCode()
+     * @see \Components\Object::hashCode() hashCode
      */
     public function hashCode()
     {
-      return object_hash($this);
+      return \math\hasho($this);
     }
 
     /**
-     * @see Components\Object::equals() Components\Object::equals()
+     * @see \Components\Object::equals() equals
      */
     public function equals($object_)
     {
@@ -96,7 +115,7 @@ namespace Components;
     }
 
     /**
-     * @see Components\Object::__toString() Components\Object::__toString()
+     * @see \Components\Object::__toString() __toString
      */
     public function __toString()
     {

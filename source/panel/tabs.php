@@ -16,18 +16,13 @@ namespace Components;
   class Ui_Panel_Tabs extends Ui_Panel
   {
     // PREDEFINED PROPERTIES
-    const HORIZONTAL=1;
-    const VERTICAL=2;
-
-    const NONE=1;
-    const FIRST=2;
-    const LAST=4;
+    const ORIENTATION_HORIZONTAL=1;
+    const ORIENTATION_VERTICAL=2;
     //--------------------------------------------------------------------------
 
 
     // PROPERTIES
-    public $align=self::HORIZONTAL;
-    public $default=self::FIRST;
+    public $orientation=self::ORIENTATION_HORIZONTAL;
     public $alwaysShowTabBar=false;
     //--------------------------------------------------------------------------
 
@@ -37,125 +32,150 @@ namespace Components;
     {
       parent::init();
 
-      $this->addStylesheet('ui/tabs');
-      $this->addScript('ui/tabs', null, 'ui_panel_tabs_init("'.$this->getId().'");');
+      $this->template=__DIR__.'/tabs.tpl';
 
-      $this->setTemplate(__DIR__.'/tabs.tpl');
+      $this->panelType='ui/panel/tabs';
+      $this->panelProperties=['orientation'];
+
+      $this->valueDefault=0;
+
+      $this->addClass('ui_panel_tabs');
     }
     //--------------------------------------------------------------------------
 
 
-    // ACCESSORS
-    public function getTabIndex(Ui_Panel $tab_)
+    // ACCESSORS/MUTATORS
+    /**
+     * @param \Components\Ui_Panel $tab_
+     *
+     * @return integer
+     */
+    public function index(Ui_Panel $tab_)
     {
       $index=array_flip($this->m_index);
 
-      if(false===isset($index[$tab_->getName()]))
+      if(false===isset($index[$tab_->name]))
+        return -1;
+
+      return $index[$tab_->name];
+    }
+
+    /**
+     * @param \Components\Ui_Panel $tab_
+     *
+     * @return boolean
+     */
+    public function isActive(Ui_Panel $tab_)
+    {
+      return $this->isActiveByIndex($this->index($tab_));
+    }
+
+    /**
+     * @param integer $index_
+     *
+     * @return boolean
+     */
+    public function isActiveByIndex($index_)
+    {
+      return (int)$this->value()===(int)$index_;
+    }
+
+    /**
+     * @param \Components\Ui_Panel $tab_
+     *
+     * @return boolean
+     */
+    public function isFirst(Ui_Panel $tab_)
+    {
+      if(false===isset($this->m_index[0]))
+        return false;
+
+      return $this->m_index[0]===$tab_->name;
+    }
+
+    /**
+     * @param \Components\Ui_Panel $tab_
+     *
+     * @return boolean
+     */
+    public function isLast(Ui_Panel $tab_)
+    {
+      if(false===isset($this->m_index[$this->m_count-1]))
+        return false;
+
+      return $this->m_index[$this->m_count-1]===$tab_->name;
+    }
+
+    /**
+     * @return \Components\Ui_Panel
+     */
+    public function first()
+    {
+      if(false===isset($this->m_index[0]))
         return null;
 
-      return $index[$tab_->getName()];
+      return $this->{$this->m_index[0]};
     }
 
-    public function isActiveTab(Ui_Panel $tab_)
+    /**
+     * @return \Components\Ui_Panel
+     */
+    public function last()
     {
-      if(null!==($value=$this->getValue()))
-        return (int)$value===$this->getTabIndex($tab_);
+      if(false===isset($this->m_index[$this->m_count-1]))
+        return null;
 
-      if(0<($this->default&self::FIRST) && $this->isFirstTab($tab_))
-        return true;
-
-      if(0<($this->default&self::LAST) && $this->isLastTab($tab_))
-        return true;
-
-      return false;
-    }
-
-    public function isActiveTabByIndex($index_)
-    {
-      if(null!==($value=$this->getValue()))
-        return (int)$value===(int)$index_;
-
-      if(0<($this->default&self::FIRST) && $this->m_index[(int)$index_]===reset($this->m_index))
-        return true;
-
-      if(0<($this->default&self::LAST) && $this->m_index[(int)$index_]===end($this->m_index))
-        return true;
-
-      return false;
-    }
-
-    public function isFirstTab(Ui_Panel $tab_)
-    {
-      return reset($this->m_index)===$tab_->getName();
-    }
-
-    public function getFirstTab()
-    {
-      return $this->{reset($this->m_index)};
-    }
-
-    public function isLastTab(Ui_Panel $tab_)
-    {
-      return end($this->m_index)===$tab_->getName();
-    }
-
-    public function getLastTab()
-    {
-      return $this->{end($this->m_index)};
+      return $this->{$this->m_index[$this->m_count-1]};
     }
     //--------------------------------------------------------------------------
 
 
-    // OVERRIDES
-    public function add(UI_Panel $panel_)
+    // OVERRIDES/IMPLEMENTS
+    /**
+     * @see \Components\Ui_Panel::add() add
+     */
+    public function add(Ui_Panel $panel_, $category_=null)
     {
-      parent::add($panel_);
+      parent::add($panel_, $category_);
 
-      array_push($this->m_index, $panel_->getName());
+      array_push($this->m_index, $panel_->name);
+
+      $this->m_count++;
     }
 
+    /**
+     * @see \Components\Ui_Panel::remove() remove
+     */
     public function remove(UI_Panel $panel_)
     {
       parent::remove($panel_);
 
       $index=[];
+
       while($next=array_shift($this->m_index))
       {
-        if($next===$panel_->getName())
+        if($next===$panel_->name)
           continue;
 
         array_push($index, $next);
       }
 
       $this->m_index=$index;
-    }
 
-    public function display()
-    {
-      if(0<($this->align&self::HORIZONTAL))
-        $this->addClass('align_horizontal');
-      else if(0<($this->align&self::VERTICAL))
-        $this->addClass('align_vertical');
-
-      parent::display();
+      $this->m_count--;
     }
     //--------------------------------------------------------------------------
 
 
     // IMPLEMENTATION
+    /**
+     * @var string[]
+     */
     private $m_index=[];
-    //-----
-
-
-    protected function initTemplateEngine(Ui_Template $engine_)
-    {
-      parent::initTemplateEngine($engine_);
-
-      $engine_->tabCount=count($this->m_index);
-      $engine_->tabIndex=array($this, 'getTabIndex');
-
-      $engine_->isActiveTab=array($this, 'isActiveTab');
-    }
+    /**
+     * @var integer
+     */
+    private $m_count=0;
     //--------------------------------------------------------------------------
   }
 ?>

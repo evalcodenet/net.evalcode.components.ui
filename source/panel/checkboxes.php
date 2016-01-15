@@ -15,52 +15,50 @@ namespace Components;
    */
   class Ui_Panel_Checkboxes extends Ui_Panel
   {
+    // PROPERTIES
+    public $options=[];
+    //--------------------------------------------------------------------------
+
+
     // CONSTRUCTION
     public function __construct($name_, $value_=null, $title_=null, array $options_=[])
     {
       parent::__construct($name_, $value_, $title_);
 
-      $this->m_options=$options_;
+      $this->options=$options_;
     }
     //--------------------------------------------------------------------------
 
 
     // INITIALIZATION
     /**
-     * @see \Components\Ui_Panel::init() \Components\Ui_Panel::init()
+     * @see \Components\Ui_Panel::init() init
      */
     protected function init()
     {
       parent::init();
 
-      $this->setTemplate(__DIR__.'/checkboxes.tpl');
+      $this->template=__DIR__.'/checkboxes.tpl';
 
-      $this->params->options=$this->m_options;
+      $this->addClass('ui_panel_checkboxes');
     }
     //--------------------------------------------------------------------------
 
 
     // OVERRIDES
     /**
-     * @see \Components\Ui_Panel::getValue() \Components\Ui_Panel::getValue()
+     * @see \Components\Ui_Panel::value() value
      */
-    public function getValue()
+    public function value($value_=null)
     {
-      return (array)parent::getValue();
+      return (array)parent::value($value_);
     }
     //--------------------------------------------------------------------------
 
 
     // IMPLEMENTATION
     /**
-     * @var array|mixed
-     */
-    protected $m_options=[];
-    //-----
-
-
-    /**
-     * @see \Components\Ui_Panel::onRetrieveValue() \Components\Ui_Panel::onRetrieveValue()
+     * @see \Components\Ui_Panel::onRetrieveValue() onRetrieveValue
      */
     protected function onRetrieveValue()
     {
@@ -70,10 +68,10 @@ namespace Components;
       $params=$this->scriptlet->request->getParams();
 
       $value=[];
-      if($params->containsKey($this->getId()))
-        $value=$params->get($this->getId());
+      if($params->containsKey($this->id()))
+        $value=$params->get($this->id());
 
-      $this->setValue((array)$value);
+      $this->value((array)$value);
     }
     //--------------------------------------------------------------------------
   }

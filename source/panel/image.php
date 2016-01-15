@@ -16,7 +16,7 @@ namespace Components;
   class Ui_Panel_Image extends Ui_Panel
   {
     // PREDEFINED PROPERTIES
-    const TYPE_VALUE='\Components\Io_Image';
+    const VALUE_TYPE='\Components\Io_Image';
     //--------------------------------------------------------------------------
 
 
@@ -33,7 +33,7 @@ namespace Components;
     {
       parent::__construct($name_, $value_, $title_);
 
-      $this->typeValue=self::TYPE_VALUE;
+      $this->valueType=self::VALUE_TYPE;
     }
     //--------------------------------------------------------------------------
 
@@ -44,20 +44,23 @@ namespace Components;
       parent::init();
 
       $this->tag=null;
+      $this->template=__DIR__.'/image.tpl';
 
-      $this->setTemplate(__DIR__.'/image.tpl');
+      $this->addClass('ui_panel_image');
     }
     //--------------------------------------------------------------------------
 
 
-    // OVERRIDES
-    public function render()
+    // OVERRIDES/IMPLEMENTS
+    public function render($panel_=null)
     {
       /* @var $value \Components\Io_Image */
-      if(($value=$this->getValue()) && $value->exists())
+      if(($value=$this->value()) && $value->exists())
       {
-        $height=(int)$this->getAttribute('height');
-        $width=(int)$this->getAttribute('width');
+        $image=$value;
+
+        $height=(int)$this->attribute('height');
+        $width=(int)$this->attribute('width');
 
         if($width || $height)
         {
@@ -68,38 +71,32 @@ namespace Components;
           else if(!$height)
             $height=round($dimensions->y/($dimensions->x/$width));
 
-          $this->setAttribute('width', $width);
-          $this->setAttribute('height', $height);
-
-          $image=Io_Image::valueOf(Environment::pathResource('ui', 'image', 'tmp', $width, $height, $value->getName()));
-
-          if(false===$image->exists())
+          if($this->embedded)
           {
-            $value->scale(Point::of($width, $height));
-            $value->saveAs($image);
+            $image=Io_Image::valueOf(Environment::pathResource('ui', 'image', 'tmp', $width, $height, $value->getName()));
+
+            if(false===$image->exists())
+            {
+              $value->scale(Point::of($width, $height));
+              $value->saveAs($image);
+            }
           }
         }
-        else
-        {
-          $image=$value;
-        }
+
+        $this->attribute('width', $width);
+        $this->attribute('height', $height);
 
         if($this->embedded)
         {
-          die('embed');
-          $this->setAttribute('src', sprintf('data:%s;base64,%s',
-            $image->getMimetype(),
-            $image->getBase64()
+          $this->attribute('src', sprintf('data:%s;base64,%s',
+            $image->getMimetype(), $image->getBase64()
           ));
         }
         else
         {
-          $pathResource=Io_Path::valueOf(Environment::pathResource());
-
-          if($pathResource->isParentOf($image->getPath()))
-            $this->setAttribute('src', Environment::uriResource($pathResource->getRelativePath($image->getPath())));
-          else
-            $this->setAttribute('src', (string)Ui_Scriptlet_Image::uri($image));
+          $this->attribute('src', (string)Media_Scriptlet_Engine::imageUri(
+            'thumbnail', $image->getPath(), $width, $height
+          ));
         }
       }
       else if(null!==$value && Debug::active())

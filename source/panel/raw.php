@@ -15,13 +15,13 @@ namespace Components;
    */
   class Ui_Panel_Raw extends Ui_Panel
   {
-    // OVERRIDES
+    // OVERRIDES/IMPLEMENTS
     /**
-     * @see \Components\Ui_Panel::render() \Components\Ui_Panel::render()
+     * @see \Components\Ui_Panel::render() render
      */
     public function render()
     {
-      return $this->getValue();
+      return $this->value();
     }
     //--------------------------------------------------------------------------
   }

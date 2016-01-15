@@ -20,7 +20,9 @@ namespace Components;
     {
       parent::init();
 
-      $this->setTemplate(__DIR__.'/frame.tpl');
+      $this->template=__DIR__.'/frame.tpl';
+
+      $this->addClass('ui_panel_frame');
     }
     //--------------------------------------------------------------------------
   }

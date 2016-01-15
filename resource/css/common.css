@@ -1,6 +1,16 @@
 @charset "utf-8";
 
 
+.gone
+{
+  display:none;
+}
+
+.hidden
+{
+  visibility:hidden;
+}
+
 .clear
 {
   display:block;
@@ -9,11 +19,6 @@
   height:0;
   line-height:0;
   font-size:0;
-}
-
-.ui_panel_loaded
-{
-  display:none;
 }
 
 .ui_panel_errors,
@@ -101,14 +106,326 @@
   color:#ffa500;
 }
 
-.ui_panel_disclosure_toggle
-{
-  float:right;
-  font:13px/23px Arial sans-serif;
-  text-decoration:none;
-}
 
 .ui_panel_datetime input
 {
   width:80px;
+}
+
+
+.ui_panel_pager .disabled
+{
+  pointer-events:none;
+}
+
+
+.ui_panel_slider .viewport 
+{
+  overflow:hidden;
+  clear:both;
+}
+
+.ui_panel_slider .stage
+{
+  display:inline-block;
+  position:relative;
+  top:0;
+  left:0;
+  -webkit-transform:translate3d(0, 0, 0);
+  -webkit-transition:all 0.5s ease;
+  -moz-transform:translate3d(0, 0, 0);
+  -moz-transition:all 0.5s ease;
+  -ms-transform:translate3d(0, 0, 0);
+  -ms-transition:all 0.5s ease;
+  -o-transform:translate3d(0, 0, 0);
+  -o-transition:all 0.5s ease;
+  transform:translate3d(0, 0, 0);
+  transition:all 0.5s ease;
+}
+
+.ui_panel_slider .item
+{
+  float:left;
+  text-align:center;
+}
+
+.ui_panel_slider.vertical .item
+{
+  float:inherit;
+}
+
+.ui_panel_slider_item
+{
+  display:inline-block;
+  text-align:left;
+}
+
+
+.ui_panel_editor_html .defaultSkin .mceSeparator
+{
+  width:1px;
+  background:#cccccc;
+}
+
+
+.ui_panel_tabs .ui_panel_tabs.labels
+{
+  list-style-type:none;
+  list-style-image:none;
+  list-style-position:inside;
+}
+
+.ui_panel_tabs .ui_panel_tabs.label
+{
+  float:left;
+  background:#ffffff;
+}
+
+.ui_panel_tabs .ui_panel_tabs.content
+{
+  display:none;
+}
+
+.ui_panel_tabs .ui_panel_tabs.content.active
+{
+  display:inherit;
+}
+
+.ui_panel_tabs .ui_panel_tabs.label.active
+{
+  background:#dddddd;
+}
+
+.ui_panel_tabs .ui_panel_tabs.label a
+{
+  display:block;
+  padding:3px 10px;
+  text-decoration:none;
+}
+
+.ui_panel_tabs.vertical .ui_panel_tabs.label
+{
+  float:none;
+}
+
+.ui_panel_tabs.vertical .ui_panel_tabs.labels,
+.ui_panel_tabs.vertical .ui_panel_tabs.contents
+{
+  float:left;
+}
+
+.ui_panel_tabs.vertical .ui_panel_tabs.label
+{
+  display:block;
+}
+
+
+.ui_panel_upload_file
+{
+  display:block;
+}
+
+.ui_panel_upload_file.content ul,
+.ui_panel_upload_file.content li
+{
+  list-style:none;
+  list-style-image:none;
+  list-style-position:inside;
+  list-style-type:none;
+  margin:0;
+  padding:0;
+}
+
+.ui_panel_upload_file.content ul
+{
+  padding:5px 0px;
+}
+
+.ui_panel_upload_file.content
+{
+  display:block;
+  width:inherit;
+  background:white;
+  padding:5px 10px;
+}
+
+.ui_panel_upload_file .odd,
+.ui_panel_upload_file .even
+{
+  float:left;
+}
+
+.ui_panel_upload_file .files_64 .odd,
+.ui_panel_upload_file .files_64 .even
+{
+  width:30%;
+}
+
+.ui_panel_upload_file .files_32 .odd,
+.ui_panel_upload_file .files_32 .even
+{
+  width:20%;
+}
+
+.ui_panel_upload_file .files_16 .odd,
+.ui_panel_upload_file .files_16 .even
+{
+  display:block;
+  float:none;
+}
+
+.ui_panel_upload_file .file .icon,
+.ui_panel_upload_file .file .info
+{
+  float:left;
+}
+
+.ui_panel_upload_file .file .label
+{
+  display:block;
+  color:#000000;
+  font:13px/20px Arial sans-serif;
+  text-decoration:none;
+}
+
+.ui_panel_upload_file .file .type,
+.ui_panel_upload_file .file .size
+{
+  display:block;
+  color:#888888;
+  font:13px/20px Arial sans-serif;
+}
+
+.ui_panel_upload_file .files_64 .file .type,
+.ui_panel_upload_file .files_64 .file .size
+{
+  line-height:15px;
+}
+
+.ui_panel_upload_file .files_64 .file .icon
+{
+  width:69px;
+}
+
+.ui_panel_upload_file .files_64 .file .label
+{
+  line-height:17px;
+}
+
+.ui_panel_upload_file .files_32 .file .type,
+.ui_panel_upload_file .files_32 .file .size
+{
+  display:none;
+}
+
+.ui_panel_upload_file .files_32 .file .icon
+{
+  width:37px;
+}
+
+.ui_panel_upload_file .files_32 .file .label
+{
+  line-height:15px;
+}
+
+.ui_panel_upload_file .files_16 .file .label
+{
+  text-indent:5px;
+}
+
+.ui_panel_upload_file .files_16 .file .type,
+.ui_panel_upload_file .files_16 .file .size
+{
+  float:left;
+  font:13px/20px Arial sans-serif;
+  text-indent:7px;
+  color:#888888;
+}
+
+.ui_panel_upload_file .file .links a
+{
+  color:#125e86;
+  text-decoration:none;
+}
+
+.ui_panel_upload_file .files_16 .file
+{
+  line-height:20px;
+}
+.ui_panel_upload_file .files_16 .file .info
+{
+  float:none;
+  display:block;
+}
+
+.ui_panel_upload_file .files_16 .file .info img,
+.ui_panel_upload_file .files_16 .file .label
+{
+  float:left;
+}
+
+.ui_panel_upload_file .files_16 .file .links
+{
+  width:200px;
+  float:right;
+  text-align:right;
+}
+
+.ui_panel_upload_file .progress
+{
+  display:none;
+  width:177px;
+  height:25px;
+  line-height:25px;
+  margin:0;
+  padding:0;
+  border:1px solid #008000;
+  -webkit-border-radius:2px;
+  -moz-border-radius:2px;
+  border-radius:2px;
+}
+
+.ui_panel_upload_file .progress div
+{
+  display:none;
+  width:0%;
+  height:25px;
+  line-height:25px;
+  margin:0;
+  padding:0;
+  background:url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxkZWZzPjxsaW5lYXJHcmFkaWVudCBpZD0iZ3JhZGllbnQiIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjAlIj48c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjpyZ2JhKDE3NSwyMzgsMjM4LDEpOyIgLz48c3RvcCBvZmZzZXQ9IjEwMCUiIHN0eWxlPSJzdG9wLWNvbG9yOnJnYmEoMCwxMjgsMCwxKTsiIC8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PHJlY3QgZmlsbD0idXJsKCNncmFkaWVudCkiIGhlaWdodD0iMTAwJSIgd2lkdGg9IjEwMCUiIC8+PC9zdmc+');
+  background:-o-linear-gradient(left, rgba(175,238,238,1), rgba(0,128,0,1));
+  background:-moz-linear-gradient(left, rgba(175,238,238,1), rgba(0,128,0,1));
+  background:-webkit-gradient(linear, left top, right top, color-stop(0, rgba(175,238,238,1)), color-stop(1, rgba(0,128,0,1)));
+  filter:progid:DXImageTransform.Microsoft.Gradient(GradientType=1,StartColorStr=#FFAFEEEE,EndColorStr=#FF008000);
+  -ms-filter:"progid:DXImageTransform.Microsoft.Gradient(GradientType=1,StartColorStr=#FFAFEEEE,EndColorStr=#FF008000)";
+}
+
+.ui_panel_upload_file .progress div div
+{
+  display:none;
+  color:#ffffff;
+  height:20px;
+  line-height:27px;
+  font:15px/27px Arial Sans sans-serif;
+  text-align:center;
+  background:transparent;
+}
+
+.ui_panel_upload_file .upload
+{
+  background:#ffffff;
+  padding:10px 0;
+}
+
+
+.ui_panel_disclosure .ui_panel_disclosure.details
+{
+  display:none;
+}
+
+.ui_panel_disclosure.native .ui_panel_disclosure.details,
+.ui_panel_disclosure.emulated.open .ui_panel_disclosure.details
+{
+  display:inherit;
 }

@@ -5,25 +5,24 @@ namespace Components;
 
 
   /**
-   * Ui_Panel_Text
+   * Ui_Panel_Editor_Html
    *
    * @api
    * @package net.evalcode.components.ui
-   * @subpackage panel
+   * @subpackage panel.editor
    *
    * @author evalcode.net
    */
-  class Ui_Panel_Text extends Ui_Panel
+  class Ui_Panel_Editor_Html extends Ui_Panel_Editor_Text
   {
     // INITIALIZATION
     protected function init()
     {
       parent::init();
 
-      $this->tag='p';
-      $this->template=__DIR__.'/text.tpl';
+      $this->panelType='ui/panel/editor/html';
 
-      $this->addClass('ui_panel_text');
+      $this->addClass('ui_panel_editor_html');
     }
     //--------------------------------------------------------------------------
   }

@@ -19,7 +19,7 @@ namespace Components;
     {
       parent::init();
 
-      $this->panel->add(new Ui_Scriptlet_Test_Panel('test'));
+      $this->panel->add(new Ui_Scriptlet_Test_Panel('foo'));
     }
     //--------------------------------------------------------------------------
   }
@@ -36,14 +36,15 @@ namespace Components;
   class Ui_Scriptlet_Test_Panel extends Ui_Panel
   {
     // INITIALIZATION
-    public function init()
+    protected function init()
     {
       parent::init();
 
       // FIXME (CSH) Re-implement fallback / root panel submission / find a better solution ...
-      $this->form='test';
+//       $this->form('POST', null, Io_Mimetype::APPLICATION_FORM_URLENCODED(), 'ISO-8859-15');
+     $this->form();
+//       $this->ajaxEnabled=false;
 
-      $this->add(new Ui_Panel_Datetime('date'));
       $this->add(new Ui_Panel_Label('labela', null, 'Google.com.hk 使用下列语言： 中文（繁體） English'));
       $this->add(new Ui_Panel_Label('labelb', null, I18n_Script::Hans()->transformToLatn('Google.com.hk 使用下列语言： 中文（繁體） English')));
       $this->add(new Ui_Panel_Label('labelc', null, I18n_Script::Hans()->transformToAscii('Google.com.hk 使用下列语言： 中文（繁體） English')));
@@ -51,14 +52,22 @@ namespace Components;
 
       $this->add(new Ui_Panel_Tabs('tabs'));
 
-      $this->tabs->add(new Ui_Panel_Text('text', null, 'Text'));
-      $this->tabs->add(new Ui_Panel_Image('image', Io_Image::valueOf(Environment::pathApplication().'/favicon.ico'), 'Image'));
+      $this->tabs->add(new Ui_Panel_Disclosure('disclosure', null, 'Disclosure'));
+
+      $this->tabs->disclosure->add(new Ui_Panel_Datetime('date'));
+
+      $this->tabs->add(new Ui_Panel_Editor_Text('text', null, 'Text'));
+
+      $this->tabs->add(new Ui_Panel_Image('image', Io_Image::valueOf(__DIR__.'/test.jpg'), 'Image'));
+      $this->tabs->image->attribute('width', 64);
+      $this->tabs->image->embedded=true;
+
       $this->tabs->add(new Ui_Panel_Upload_File('file', null, 'File'));
       $this->tabs->add(new Ui_Panel_Select('list', null, 'List', ['A', 'B', 'C']));
-      $this->tabs->add(new Ui_Panel_Html('html', null, 'HTML'));
+      $this->tabs->add(new Ui_Panel_Editor_Html('html', null, 'HTML'));
 
-      $button=new Ui_Panel_Button('submit', null, 'Submit');
-      $button->setCallback([$this, 'onSubmit']);
+      $button=new Ui_Panel_Button_Submit('submit', null, 'Submit');
+      $button->callback=[$this, 'onSubmit'];
 
       $this->add($button);
     }
@@ -68,10 +77,13 @@ namespace Components;
     // IMPLEMENTATION
     /*private*/ function onSubmit()
     {
-      $this->date->setValue(Date::now());
-      $this->tabs->html->setValue($this->tabs->html->getValue());
+      /* @var $value \Components\Date */
+      $value=$this->tabs->disclosure->date->value();
+      $this->tabs->disclosure->date->value($value->after(Time::forMinutes(100)));
 
-      $this->redraw(true);
+      $this->tabs->disclosure->open=!$this->tabs->disclosure->open;
+
+      $this->tabs->redraw();
     }
     //--------------------------------------------------------------------------
   }

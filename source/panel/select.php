@@ -16,7 +16,14 @@ namespace Components;
   class Ui_Panel_Select extends Ui_Panel
   {
     // PROPERTIES
-    public $emptyOptionTitle=null;
+    /**
+     * @var scalar[]
+     */
+    public $options=[];
+    /**
+     * @var string
+     */
+    public $emptyOptionTitle;
     //--------------------------------------------------------------------------
 
 
@@ -25,7 +32,7 @@ namespace Components;
     {
       parent::__construct($name_, $value_, $title_);
 
-      $this->m_options=$options_;
+      $this->options=$options_;
     }
     //--------------------------------------------------------------------------
 
@@ -36,15 +43,10 @@ namespace Components;
       parent::init();
 
       $this->tag=null;
-      $this->setTemplate(__DIR__.'/select.tpl');
+      $this->template=__DIR__.'/select.tpl';
 
-      $this->params->options=$this->m_options;
+      $this->addClass('ui_panel_select');
     }
-    //--------------------------------------------------------------------------
-
-
-    // IMPLEMENTATION
-    protected $m_options=[];
     //--------------------------------------------------------------------------
   }
 ?>

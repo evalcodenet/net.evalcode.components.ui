@@ -30,7 +30,7 @@
 
     var form=document.createElement("form");
     form.method="POST";
-    form.action=ui_panel_get_route();
+    form.action=ui.route;
     form.enctype="multipart/form-data";
     form.target=frame.id;
     container.appendChild(form);
@@ -53,14 +53,17 @@
     uiPanelCallback.value=TYPE_PANEL_UPLOAD_FILE+"::"+METHOD_PANEL_UPLOAD_FILE_UPLOAD;
     form.appendChild(uiPanelCallback);
 
-    if("undefined"!=typeof(ui_panel_transfer_sid))
-    {
-      var uiPanelSid=document.createElement("input");
-      uiPanelSid.type="hidden";
-      uiPanelSid.name="ui-panel-sid";
-      uiPanelSid.value=ui_panel_transfer_sid;
-      form.appendChild(uiPanelSid);
-    }
+    var uiPanelScope=document.createElement("input");
+    uiPanelScope.type="hidden";
+    uiPanelScope.name="ui-panel-scope";
+    uiPanelScope.value=ui_panel_scope;
+    form.appendChild(uiPanelScope);
+
+    var uiPanelTx=document.createElement("input");
+    uiPanelTx.type="hidden";
+    uiPanelTx.name="ui-panel-tx";
+    uiPanelTx.value=ui_panel_tx;
+    form.appendChild(uiPanelTx);
 
     form.appendChild(panelUpload.context);
 
@@ -73,7 +76,7 @@
       if(!panelUploadProgressDisplay)
         return;
 
-      ui_panel_submit_static(panelIdUpload, TYPE_PANEL_UPLOAD_FILE, METHOD_PANEL_UPLOAD_FILE_STATUS, {"file": apcUploadProgress.value}, function(response_)
+      ui.submitStatic(panelIdUpload, [TYPE_PANEL_UPLOAD_FILE, METHOD_PANEL_UPLOAD_FILE_STATUS], {"file": apcUploadProgress.value}, function(response_)
       {
         if(response_ && response_.content)
         {

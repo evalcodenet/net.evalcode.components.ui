@@ -18,15 +18,15 @@ namespace Components;
   class Ui_Panel_Upload_File extends Ui_Panel implements Countable
   {
     // PROPERTIES
-    public static $implArchives=array(
+    public static $implArchives=[
       'application/zip'=>'\ZipArchive'
-    );
+    ];
 
     public $fileExtensionsAllowed=[];
-    public $fileExtensionsForbidden=array('php', 'php3', 'php4', 'php5', 'phtml', 'phps', 'js', 'css');
+    public $fileExtensionsForbidden=['php', 'php3', 'php4', 'php5', 'phtml', 'phps', 'js', 'css'];
 
     public $mimeTypesAllowed=[];
-    public $mimeTypesForbidden=array('application/x-php', 'application/x-php-source');
+    public $mimeTypesForbidden=['application/x-php', 'application/x-php-source'];
 
 
   /**
@@ -44,35 +44,52 @@ namespace Components;
     {
       parent::init();
 
-      $this->addStylesheet('ui/upload/file');
-      $this->addStylesheet('/resource/io/css/mimetype.css');
+      $this->scriptlet->style('io/mimetype');
+      $this->template=__DIR__.'/file.tpl';
 
-      $this->addScript('ui/upload/file');
+      $this->panelType='ui/upload/file';
 
-      $this->setTemplate(__DIR__.'/file.tpl');
+      $this->addClass('ui_panel_upload_file');
     }
     //--------------------------------------------------------------------------
 
 
-    // ACCESSORS
-    public function count()
-    {
-      return count($this->m_files);
-    }
-
-    public function getFiles()
+    // ACCESSORS/MUTATORS
+    /**
+     * @return \Components\Io_File[]
+     */
+    public function files()
     {
       return $this->m_files;
     }
 
-    public function getFileRemoved()
+    /**
+     * @return scalar
+     */
+    public function fileRemoved()
     {
-      return $this->getRequestParam('remove');
+      return $this->requestParam('remove');
     }
 
-    public function addFileActionJs($actionName_, $actionTitle_, array $applyActionCallback_)
+    /**
+     * @param string $actionName_
+     * @param string $actionTitle_
+     * @param scalar[] $applyActionCallback_
+     */
+    public function fileActionJs($actionName_, $actionTitle_, array $applyActionCallback_)
     {
-      $this->m_fileActionsJs[$actionName_]=array('title'=>$actionTitle_, 'callback'=>$applyActionCallback_);
+      $this->m_fileActionsJs[$actionName_]=['title'=>$actionTitle_, 'callback'=>$applyActionCallback_];
+    }
+    //--------------------------------------------------------------------------
+
+
+    // OVERRIDES/IMPLEMENTS
+    /**
+     * @see \Components\Countable::count() count
+     */
+    public function count()
+    {
+      return count($this->m_files);
     }
     //--------------------------------------------------------------------------
 
@@ -83,30 +100,24 @@ namespace Components;
     //-----
 
 
-    protected function initTemplateEngine(Ui_Template $engine_)
-    {
-      parent::initTemplateEngine($engine_);
-
-      $engine_->count=array($this, 'count');
-      $engine_->files=array($this, 'getFiles');
-      $engine_->file=array($this, 'printFile');
-    }
-
+    /**
+     * @see \Components\Ui_Panel::onRetrieveValue() onRetrieveValue
+     */
     protected function onRetrieveValue()
     {
       parent::onRetrieveValue();
 
-      $uploadPathTmp=self::getTemporaryUploadPath();
+      $uploadPathTmp=self::temporaryUploadPath();
 
       if($uploadPathTmp->isDirectory())
         $this->scanTemporaryUploadPath($uploadPathTmp);
 
-      $uploadPath=self::getUploadPath();
+      $uploadPath=self::uploadPath();
 
       $this->m_files=[];
       $this->scanUploadPath($uploadPath, '', $this->m_files);
 
-      if(($remove=$this->getRequestParam('remove')) && isset($this->m_files[$remove]))
+      if(($remove=$this->requestParam('remove')) && isset($this->m_files[$remove]))
       {
         $this->m_files[$remove]->delete();
 
@@ -196,7 +207,7 @@ namespace Components;
 
         $archiveId=md5($file_->getPathAsString());
         $archiveImpl=self::$implArchives[$mimeType->name()];
-        $archivePath=self::getUploadPath($archiveId);
+        $archivePath=self::uploadPath($archiveId);
 
         // TODO Io_Archive_Zip
         $archive=new $archiveImpl();
@@ -211,7 +222,7 @@ namespace Components;
         return;
       }
 
-      $file=$file_->move(self::getUploadPath($subPath_)->getFile($file_->getName()));
+      $file=$file_->move(self::uploadPath($subPath_)->getFile($file_->getName()));
       $this->m_files[$subPath_.$file->getName()]=$file;
     }
 
@@ -232,14 +243,14 @@ namespace Components;
     }
 
 
-    // TEMPLATE METHODS
-    /*private*/ function printFile(Io_File $file_, $subPath_, $mimeTypeIconSize_=Io_Mimetype::ICON_SIZE_64)
+    // TEMPLATE HELPERS
+    public function printFile(Io_File $file_, $subPath_, $mimeTypeIconSize_=Io_Mimetype::ICON_SIZE_64)
     {
       $actions=[];
 
       foreach($this->m_fileActionsJs as $name=>$action)
       {
-        if(false===($callback=call_user_func_array($action['callback'], array($file_))))
+        if(false===($callback=call_user_func_array($action['callback'], [$file_])))
           continue;
 
         $function=array_shift($callback);
@@ -248,14 +259,14 @@ namespace Components;
           $name,
           $action['title'],
           $function,
-          strtr(json_encode(array_merge(array($subPath_), $callback)), '"', "'")
+          strtr(json_encode(array_merge([$subPath_], $callback)), '"', "'")
         );
       }
 
       $actionRemove=sprintf('<a href="javascript:void(0);" onclick="%3$s" class="%1$s">%2$s</a>',
         'remove',
         'Remove',
-        $this->callbackAjax(array('remove'=>$subPath_))
+        $this->callback(['remove'=>$subPath_])
       );
 
       echo '<div class="file">';
@@ -295,7 +306,7 @@ namespace Components;
           <br class="clear"/>
         </div>',
           ucfirst($file_->getMimetype()->title()),
-          $file_->getSize()->formatted(2),
+          $file_->getSize()->formatAsBytes(2),
           implode(' | ', $actions)
       );
     }
@@ -305,7 +316,7 @@ namespace Components;
     /**
      * @return Io_Path
      */
-    private static function getTemporaryUploadPath()
+    private static function temporaryUploadPath()
     {
       // FIXME Use panel id.
       $path=Io::tmpPath('upload', false);
@@ -322,7 +333,7 @@ namespace Components;
      *
      * @return Io_Path
      */
-    private static function getUploadPath($directory_=null, $create_=true)
+    private static function uploadPath($directory_=null, $create_=true)
     {
       $path=Io::tmpPath($directory_, false);
 
@@ -337,13 +348,13 @@ namespace Components;
      *
      * @return Io_File
      */
-    private static function getUploadedFile($filename_)
+    private static function uploadedFile($filename_)
     {
       $segments=explode('/', $filename_);
       $filename=array_pop($segments);
       $directory=implode('/', $segments);
 
-      return self::getUploadPath($directory)->getFile($filename);
+      return self::uploadPath($directory)->getFile($filename);
     }
 
     /**
@@ -351,7 +362,7 @@ namespace Components;
      */
     private static function removeUploadPath($directory_=null)
     {
-      if($path=self::getUploadPath($directory_))
+      if($path=self::uploadPath($directory_))
         return $path->clear();
 
       return true;
@@ -367,7 +378,7 @@ namespace Components;
       {
         try
         {
-          Io::fileUpload($key, self::getTemporaryUploadPath());
+          Io::fileUpload($key, self::temporaryUploadPath());
         }
         catch(Io_Exception $e)
         {
@@ -381,7 +392,7 @@ namespace Components;
 
     /*private*/ static function status()
     {
-      return apc_fetch('apc_upload_'.$_REQUEST[Ui_Panel::getSubmittedPanelId().'-file']);
+      return apc_fetch('apc_upload_'.$_REQUEST[Ui_Scriptlet::$submittedPanelId.'-file']);
     }
 
     /*private*/ static function cleanup()

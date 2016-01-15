@@ -20,35 +20,37 @@ namespace Components;
     {
       parent::init();
 
-      $this->addScript('ui/date', null, 'ui_panel_datetime_init(\''.$this->getId().'\');');
+      $this->template=__DIR__.'/datetime.tpl';
 
-      $this->setTemplate(__DIR__.'/datetime.tpl');
+      $this->addClass('ui_panel_datetime');
 
-      if(!$value=$this->getValue())
-        $this->setValue(Date::now());
+      if(!$value=$this->value())
+        $this->value(Date::now());
     }
     //--------------------------------------------------------------------------
 
 
     // IMPLEMENTATION
     /**
-     * @see \Components\Ui_Panel::onRetrieveValue() \Components\Ui_Panel::onRetrieveValue()
+     * @see \Components\Ui_Panel::onRetrieveValue() onRetrieveValue
      */
     protected function onRetrieveValue()
     {
       $params=$this->scriptlet->request->getParams();
 
-      if($params->containsKey("{$this->getId()}-date"))
-        $date=$params->get("{$this->getId()}-date");
+      $id=$this->id();
+
+      if($params->containsKey("$id-date"))
+        $date=$params->get("$id-date");
       else
         $date=Date::now()->formatLocalized('common/date/pattern/short');
 
-      if($params->containsKey("{$this->getId()}-time"))
-        $time=$params->get("{$this->getId()}-time");
+      if($params->containsKey("$id-time"))
+        $time=$params->get("$id-time");
       else
         $time=Date::now()->formatLocalized('common/time/pattern/short');
 
-      $this->setValue(Date::parse("$date $time", Timezone::systemDefault()));
+      $this->value(Date::parse("$date $time", Timezone::systemDefault()));
     }
     //--------------------------------------------------------------------------
   }
